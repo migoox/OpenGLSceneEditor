@@ -433,8 +433,9 @@
       <Filter>Header Files</Filter>
     </None>
     <None Include="res\shaders\LightSource.shader" />
-    <None Include="res\shaders\Object.shader" />
+    <None Include="res\shaders\SimpleMaterial.shader" />
     <None Include="imgui.ini" />
+    <None Include="res\shaders\Material.shader" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Application.cpp">
@@ -1431,7 +1432,16 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="res\textures\box.jpg">
+    <Image Include="res\textures\box.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\textures\box_described.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\textures\dice.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\specular_maps\box_specular.png">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

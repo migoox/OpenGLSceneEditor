@@ -46,7 +46,7 @@ GLFWwindow* InitWindow()
     glfwWindowHint(GLFW_REFRESH_RATE, 60);
 
     // Open a window and create its OpenGL context
-    GLFWwindow* window = glfwCreateWindow(winX, winY, "Cuboid", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(winX, winY, "Cube", NULL, NULL);
     if (window == NULL) {
         fprintf(stderr, "Failed to open GLFW window. If you have an Intel GPU, they are not 3.3 compatible. Try the 2.1 version of the tutorials.\n");
         getchar();
@@ -73,24 +73,56 @@ GLFWwindow* InitWindow()
     return window;
 }
 
-void InitObjects(std::vector<Cuboid>& cuboids, const unsigned int count)
+void InitSimpleObjects(std::vector<Cube>& cubes, const unsigned int count)
 {
-    cuboids.reserve(count);
+    cubes.reserve(count);
     srand(time(NULL));
     auto random = []() -> float { return (float)(rand() % 1999) / 1000.f - 1.f; };
     for (unsigned int i = 0; i < count; i++)
     {
-        Cuboid cuboid = Cuboid(0.4f, 0.4f, 0.4f);
+        Cube cube = Cube(0.4f);
         glm::vec3 dir = glm::normalize(glm::vec3(random(), random(), random()));
         float magnitude = 0.5f + ((random() + 1.f) / 2.f) * 2.f;
-        cuboid.Translate(dir * magnitude);
-        cuboid.SetRotation(glm::vec3(random() * glm::pi<float>(),
+        cube.Translate(dir * magnitude);
+        cube.SetRotation(glm::vec3(random() * glm::pi<float>(),
                                     random() * glm::pi<float>(), 
                                     random() * glm::pi<float>()));
 
-        cuboid.SetMaterial(Materials::GetMaterial(static_cast<Materials::MaterialType>(rand() % 4)));
-        //cuboid.SetMaterial({glm::vec3(0.73f, 1.f, 0.2f), glm::vec3(0.73f, 1.f, 0.2f), glm::vec3(0.5f, 0.5f, 0.5f), 256.f});
-        cuboids.push_back(cuboid);
+        cube.SetSimpleMaterial(SimpleMaterials::GetMaterial(static_cast<SimpleMaterials::Type>(rand() % 4)));
+        //Cube.SetMaterial({glm::vec3(0.73f, 1.f, 0.2f), glm::vec3(0.73f, 1.f, 0.2f), glm::vec3(0.5f, 0.5f, 0.5f), 256.f});
+        cubes.push_back(cube);
+    }
+}
+
+void InitObjects(std::vector<Cube>& cubes, const unsigned int count)
+{
+    cubes.reserve(count);
+    srand(time(NULL));
+    auto random = []() -> float { return (float)(rand() % 1999) / 1000.f - 1.f; };
+
+    std::shared_ptr<Texture> texture1 = std::shared_ptr<Texture>(new Texture("res/textures/dice.png"));
+    std::shared_ptr<Texture> specularMap1 = std::shared_ptr<Texture>(new Texture("res/specular_maps/marble_dice_specular.png"));
+    std::shared_ptr<Texture> texture2 = std::shared_ptr<Texture>(new Texture("res/textures/box.png"));
+    std::shared_ptr<Texture> specularMap2 = std::shared_ptr<Texture>(new Texture("res/specular_maps/box_specular.png"));
+
+    Material mat1 = { specularMap1, texture1, 32.f };
+    Material mat2 = { specularMap2, texture2, 256.f };
+
+    for (unsigned int i = 0; i < count; i++)
+    {
+        Cube cube = Cube(0.3f);
+        cube.SetMaterial(mat1);
+
+        //Cube.SetSimpleMaterial(SimpleMaterials::GetMaterial(static_cast<SimpleMaterials::SimpleMaterialType>(rand() % 4)));
+        //Cube.SetMaterial({glm::vec3(0.73f, 1.f, 0.2f), glm::vec3(0.73f, 1.f, 0.2f), glm::vec3(0.5f, 0.5f, 0.5f), 256.f});
+        glm::vec3 dir = glm::normalize(glm::vec3(random(), random(), random()));
+        float magnitude = 0.5f + ((random() + 1.f) / 2.f) * 1.f;
+        cube.Translate(dir * magnitude);
+        cube.Translate(glm::vec3(0.f, 0.f, 2.f));
+        cube.SetRotation(glm::vec3(random() * glm::pi<float>(),
+            random() * glm::pi<float>(),
+            random() * glm::pi<float>()));
+        cubes.push_back(cube);
     }
 }
 
@@ -315,15 +347,17 @@ int main(void)
     Camera camera(45.0f, (float)winX / (float)winY, 0.3f, 1000.0f);
 
     // objects
-    std::vector<Cuboid> objects;
-    InitObjects(objects, 16);
+    std::vector<Cube> objects;
+    //InitSimpleObjects(objects, 0);
+    InitObjects(objects, 10);
 
     // light
-    Light light;
-    light.SetColor(glm::vec4(1.f, 1.f, 1.f, 1.f));
+    Spotlight light;
+    light.SetTranslation(glm::vec3(0.f, 1.f, -2.f));
+    light.SetRotation(glm::vec3(0.2f, 0.f, 0.f));
 
     // shaders
-    Shader objectShader("res/shaders/Object.shader");
+    Shader objectShader("res/shaders/Material.shader");
     Shader lightSourceShader("res/shaders/LightSource.shader");
 
     // renderer
@@ -358,30 +392,47 @@ int main(void)
         objectShader.Bind();
         objectShader.SetUniformMat4f("u_ViewMatrix", camera.GetViewMatrix());
         objectShader.SetUniformMat4f("u_ProjectionMatrix", camera.GetProjectionMatrix());
-        objectShader.SetUniform4f("u_LightColor", light.GetColor());
-        objectShader.SetUniform3f("u_Light.position", light.GetTranslation());
-        objectShader.SetUniform3f("u_Light.ambient", light.GetAmbient());
-        objectShader.SetUniform3f("u_Light.diffuse", light.GetDiffuse());
-        objectShader.SetUniform3f("u_Light.specular", light.GetSpecular());
         objectShader.SetUniform3f("u_ViewerPosition", camera.GetTranslation());
         objectShader.Unbind();
 
+        light.UpdateShader(objectShader);
+
         // draw objects
-        for (auto& object : objects)
+        /*for (auto& currentObject : objects)
         {
             // update model matrix and material of current object
             objectShader.Bind();
-            objectShader.SetUniformMat4f("u_ModelMatrix", object.GetModelMatrix());
-            objectShader.SetUniformMat3f("u_NormalMatrix", object.GetNormalMatrix());
-            objectShader.SetUniform3f("u_Material.ambient", object.GetMaterial().ambient);
-            objectShader.SetUniform3f("u_Material.diffuse", object.GetMaterial().diffuse);
-            objectShader.SetUniform3f("u_Material.specular", object.GetMaterial().specular);
-            objectShader.SetUniform1f("u_Material.shininess", object.GetMaterial().shininess);
+            objectShader.SetUniformMat4f("u_ModelMatrix", currentObject.GetModelMatrix());
+            objectShader.SetUniformMat3f("u_NormalMatrix", currentObject.GetNormalMatrix());
+            objectShader.SetUniform3f("u_Material.ambient", currentObject.GetSimpleMaterial().ambient);
+            objectShader.SetUniform3f("u_Material.diffuse", currentObject.GetSimpleMaterial().diffuse);
+            objectShader.SetUniform3f("u_Material.specular", currentObject.GetSimpleMaterial().specular);
+            objectShader.SetUniform1f("u_Material.shininess", currentObject.GetSimpleMaterial().shininess);
             objectShader.Unbind();
 
             // draw object
-            renderer.Draw(object.GetMesh(), objectShader);
+            renderer.Draw(currentObject.GetMesh(), objectShader);
+        }*/
+
+        for (auto& currentObject : objects)
+        {
+            // update model matrix and material of current object
+            objectShader.Bind();
+            objectShader.SetUniformMat4f("u_ModelMatrix", currentObject.GetModelMatrix());
+            objectShader.SetUniformMat3f("u_NormalMatrix", currentObject.GetNormalMatrix());
+            objectShader.SetUniform1i("u_Material.diffuse", 0);
+            objectShader.SetUniform1i("u_Material.specular", 1);
+            objectShader.SetUniform1f("u_Material.shininess", 16.f);
+            objectShader.Unbind();
+
+            // draw object
+            currentObject.GetTexture()->Bind(0);
+            currentObject.GetSpecularMap()->Bind(1);
+            renderer.Draw(currentObject.GetMesh(), objectShader);
+            currentObject.GetTexture()->Unbind();
+            currentObject.GetSpecularMap()->Unbind();
         }
+
         
         // update light source
         lightSourceShader.Bind();
@@ -391,7 +442,7 @@ int main(void)
         lightSourceShader.SetUniform4f("u_LightColor", light.GetColor());
         lightSourceShader.Unbind();
 
-        // draw light representation
+        // draw light source
         renderer.Draw(light.GetMesh(), lightSourceShader);
 
         // render imgui 
@@ -415,5 +466,3 @@ int main(void)
 
     return 0;
 }
-
-

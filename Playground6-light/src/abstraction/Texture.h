@@ -1,6 +1,6 @@
 #pragma once
-#include <iostream>
 #include "Debug.h"
+#include <iostream>
 
 class Texture
 {

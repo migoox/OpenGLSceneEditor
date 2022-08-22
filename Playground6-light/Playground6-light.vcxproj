@@ -169,7 +169,8 @@
   <ItemGroup>
     <None Include="imgui.ini" />
     <None Include="res\shaders\LightSource.shader" />
-    <None Include="res\shaders\Object.shader" />
+    <None Include="res\shaders\Material.shader" />
+    <None Include="res\shaders\SimpleMaterial.shader" />
     <None Include="src\vendor\glm\detail\func_common.inl" />
     <None Include="src\vendor\glm\detail\func_common_simd.inl" />
     <None Include="src\vendor\glm\detail\func_exponential.inl" />
@@ -645,7 +646,10 @@
     <ClInclude Include="src\abstraction\VertexBufferLayout.h" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="res\textures\box.jpg" />
+    <Image Include="res\specular_maps\box_specular.png" />
+    <Image Include="res\textures\box.png" />
+    <Image Include="res\textures\box_described.png" />
+    <Image Include="res\textures\dice.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
