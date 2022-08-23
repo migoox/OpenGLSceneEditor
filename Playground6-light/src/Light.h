@@ -8,7 +8,11 @@ public:
 		Cuboid(0.1f, 0.1f, 0.1f), 
 		m_Ambient(glm::vec3(1.f)),
 		m_Diffuse(glm::vec3(1.f)),
-		m_Specular(glm::vec3(1.f)) { }
+		m_Specular(glm::vec3(1.f)) 
+	{
+		this->SetOrigin(glm::vec3(0.05f));
+		m_Index = m_NextIndex++;
+	}
 
 	~Light() { }
 
@@ -20,6 +24,7 @@ public:
 	{
 		m_Diffuse = color * diffuse;
 		m_Ambient = m_Diffuse * ambient;
+		m_Specular = glm::vec3((color.r + color.g + color.b) / 3.f);
 	}
 
 	glm::vec3 GetAmbient() const { return m_Ambient; }
@@ -28,57 +33,72 @@ public:
 
 	glm::vec3 GetPosition() const { return this->GetTranslation(); }
 
-	virtual int GetType() const { return 0; }
-
 	virtual void UpdateShader(Shader& shader) 
 	{ 
 		shader.Bind();
-		shader.SetUniform1i("u_Light.type", this->GetType());
-		shader.SetUniform3f("u_Light.position", this->GetTranslation());
-		shader.SetUniform3f("u_Light.ambient", m_Ambient);
-		shader.SetUniform3f("u_Light.diffuse", m_Diffuse);
-		shader.SetUniform3f("u_Light.specular", m_Specular);
+		shader.SetUniform3f("u_Lights[" + std::to_string(m_Index) + "].position", this->GetTranslation());
+		shader.SetUniform3f("u_Lights[" + std::to_string(m_Index) + "].ambient", m_Ambient);
+		shader.SetUniform3f("u_Lights[" + std::to_string(m_Index) + "].diffuse", m_Diffuse);
+		shader.SetUniform3f("u_Lights[" + std::to_string(m_Index) + "].specular", m_Specular);
+		shader.SetUniform1i("u_DefaultLightsCount", m_NextIndex);
 		shader.Unbind();
 	}
+
+	virtual unsigned int GetIndex() { return m_Index; }
 
 private:
 	glm::vec3 m_Ambient;
 	glm::vec3 m_Diffuse;
 	glm::vec3 m_Specular;
+
+	static unsigned int m_NextIndex;
+	unsigned int m_Index;
 };
+unsigned int Light::m_NextIndex = 0;
 
 class DirectionalLight : public Light
 {
 public:
-	DirectionalLight() : Light() { }
-	virtual int GetType() const override { return 1; }
+	DirectionalLight() : Light() 
+	{ 
+		m_Index = m_NextIndex++;
+	}
 	glm::vec3 GetDirection() const { return this->GetForward(); }
 
 	virtual void UpdateShader(Shader& shader) override
 	{
 		shader.Bind();
-		shader.SetUniform1i("u_Light.type", this->GetType());
-		shader.SetUniform3f("u_Light.position", this->GetTranslation());
-		shader.SetUniform3f("u_Light.direction", this->GetDirection());
-		shader.SetUniform3f("u_Light.ambient", this->GetAmbient());
-		shader.SetUniform3f("u_Light.diffuse", this->GetDiffuse());
-		shader.SetUniform3f("u_Light.specular", this->GetSpecular());
+		shader.SetUniform3f("u_DirectionalLights[" + std::to_string(m_Index) + "].direction", this->GetDirection());
+		shader.SetUniform3f("u_DirectionalLights[" + std::to_string(m_Index) + "].ambient", this->GetAmbient());
+		shader.SetUniform3f("u_DirectionalLights[" + std::to_string(m_Index) + "].diffuse", this->GetDiffuse());
+		shader.SetUniform3f("u_DirectionalLights[" + std::to_string(m_Index) + "].specular", this->GetSpecular());
+		shader.SetUniform1i("u_DirectionalLightsCount", m_NextIndex);
 		shader.Unbind();
 	}
+
+	virtual unsigned int GetIndex() override { return m_Index; }
+private:
+	static unsigned int m_NextIndex;
+	unsigned int m_Index;
 };
+unsigned int DirectionalLight::m_NextIndex = 0;
 
 class PointLight : public Light
 {
 public:
-	PointLight() : Light(), m_Constant(1.f), m_Linear(1.f), m_Quadratic(1.f) { }
+	PointLight() : Light(), m_Constant(1.f), m_Linear(1.f), m_Quadratic(1.f) 
+	{ 
+		m_Index = m_NextIndex++;
+	}
 	PointLight(float constant, float linear, float quadratic) : 
 		Light(), 
 		m_Constant(constant),
 		m_Linear(linear),
 		m_Quadratic(quadratic)
-	{ }
+	{ 
+		m_Index = m_NextIndex++;
+	}
 
-	virtual int GetType() const override { return 2; }
 	
 	void SetConstant(float constant) { m_Constant = constant; }
 	float GetConstant() const { return m_Constant; }
@@ -92,28 +112,36 @@ public:
 	virtual void UpdateShader(Shader& shader) override
 	{
 		shader.Bind();
-		shader.SetUniform1i("u_Light.type", this->GetType());
-		shader.SetUniform3f("u_Light.position", this->GetTranslation());
-		shader.SetUniform1f("u_Light.constant", m_Constant);
-		shader.SetUniform1f("u_Light.linear", m_Linear);
-		shader.SetUniform1f("u_Light.quadratic", m_Quadratic);
-		shader.SetUniform3f("u_Light.diffuse", this->GetDiffuse());
-		shader.SetUniform3f("u_Light.specular", this->GetSpecular());
+		shader.SetUniform3f("u_PointLights[" + std::to_string(m_Index) + "].position", this->GetTranslation());
+		shader.SetUniform3f("u_PointLights[" + std::to_string(m_Index) + "].ambient", this->GetAmbient());
+		shader.SetUniform3f("u_PointLights[" + std::to_string(m_Index) + "].diffuse", this->GetDiffuse());
+		shader.SetUniform3f("u_PointLights[" + std::to_string(m_Index) + "].specular", this->GetSpecular());
+		shader.SetUniform1f("u_PointLights[" + std::to_string(m_Index) + "].constant", m_Constant);
+		shader.SetUniform1f("u_PointLights[" + std::to_string(m_Index) + "].linear", m_Linear);
+		shader.SetUniform1f("u_PointLights[" + std::to_string(m_Index) + "].quadratic", m_Quadratic);
+		shader.SetUniform1i("u_PointLightsCount", m_NextIndex);
 		shader.Unbind();
 	}
 
+	virtual unsigned int GetIndex() override { return m_Index; }
 private:
 	float m_Constant;
 	float m_Linear;
 	float m_Quadratic;
+
+	static unsigned int m_NextIndex;
+	unsigned int m_Index;
 };
+unsigned int PointLight::m_NextIndex = 0;
 
 class Spotlight : public Light
 {
 public:
-	Spotlight() : Light(), m_CutOffAngle(glm::radians(12.5f)), m_OuterCutOffAngle(glm::radians(17.5f)) { }
+	Spotlight() : Light(), m_CutOffAngle(glm::radians(12.5f)), m_OuterCutOffAngle(glm::radians(17.5f)) 
+	{ 
+		m_Index = m_NextIndex++;
+	}
 
-	virtual int GetType() const override { return 3; }
 	glm::vec3 GetDirection() const { return this->GetForward(); }
 
 	void SetCutOffAngle(float radians) { m_CutOffAngle = radians; }
@@ -125,18 +153,23 @@ public:
 	virtual void UpdateShader(Shader& shader) override
 	{
 		shader.Bind();
-		shader.SetUniform1i("u_Light.type", this->GetType());
-		shader.SetUniform3f("u_Light.position", this->GetTranslation());
-		shader.SetUniform3f("u_Light.direction", this->GetDirection());
-		shader.SetUniform1f("u_Light.cutOff", m_CutOffAngle);
-		shader.SetUniform1f("u_Light.outerCutOff", m_OuterCutOffAngle);
-		shader.SetUniform3f("u_Light.ambient", this->GetAmbient());
-		shader.SetUniform3f("u_Light.diffuse", this->GetDiffuse());
-		shader.SetUniform3f("u_Light.specular", this->GetSpecular());
+		shader.SetUniform3f("u_Spotlights[" + std::to_string(m_Index) + "].position", this->GetTranslation());
+		shader.SetUniform3f("u_Spotlights[" + std::to_string(m_Index) + "].direction", this->GetDirection());
+		shader.SetUniform3f("u_Spotlights[" + std::to_string(m_Index) + "].ambient", this->GetAmbient());
+		shader.SetUniform3f("u_Spotlights[" + std::to_string(m_Index) + "].diffuse", this->GetDiffuse());
+		shader.SetUniform3f("u_Spotlights[" + std::to_string(m_Index) + "].specular", this->GetSpecular());
+		shader.SetUniform1f("u_Spotlights[" + std::to_string(m_Index) + "].cutOff", m_CutOffAngle);
+		shader.SetUniform1f("u_Spotlights[" + std::to_string(m_Index) + "].outerCutOff", m_OuterCutOffAngle);
+		shader.SetUniform1i("u_SpotlightsCount", m_NextIndex);
 		shader.Unbind();
 	}
 
+	virtual unsigned int GetIndex() override { return m_Index; }
 private:
 	float m_CutOffAngle;
-	float m_OuterCutOffAngle;
+	float m_OuterCutOffAngle; 
+
+	static unsigned int m_NextIndex;
+	unsigned int m_Index;
 };
+unsigned int Spotlight::m_NextIndex = 0;

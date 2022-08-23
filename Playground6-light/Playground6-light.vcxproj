@@ -647,6 +647,9 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\specular_maps\box_specular.png" />
+    <Image Include="res\specular_maps\marble_dice_specular.png" />
+    <Image Include="res\specular_maps\marble_specular.png" />
+    <Image Include="res\specular_maps\scratched_metal_specular.png" />
     <Image Include="res\textures\box.png" />
     <Image Include="res\textures\box_described.png" />
     <Image Include="res\textures\dice.png" />

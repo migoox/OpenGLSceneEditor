@@ -84,7 +84,7 @@ Cuboid::Cuboid(float width, float length, float height)
 
 	m_Mesh.Set(vertices, indices);
 
-	m_Color = glm::vec4(1.f);
+	m_Color = glm::vec4(1.0f);
 }
 
 Cuboid::~Cuboid()

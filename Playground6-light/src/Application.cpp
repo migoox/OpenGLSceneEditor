@@ -27,7 +27,6 @@
 
 int winX = 1024, winY = 768;
 
-
 GLFWwindow* InitWindow()
 {
     // Initialise GLFW
@@ -71,6 +70,34 @@ GLFWwindow* InitWindow()
     glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
 
     return window;
+}
+
+void InitLights(std::vector<Light>& lights, const unsigned int count)
+{
+
+}
+
+void InitDirectionalLights(std::vector<DirectionalLight>& lights, const unsigned int count)
+{
+    DirectionalLight light;
+    light.SetTranslation(glm::vec3(0.f, 3.f, 3.f));
+    light.SetRotation(glm::vec3(-0.5f, 0.f, 0.f));
+    light.Rotate(glm::vec3(0.f, 3.f, 0.f), Space::Global);
+    lights.push_back(light);
+}
+
+void InitPointLights(std::vector<PointLight>& lights, const unsigned int count)
+{
+    PointLight light(1.f, 0.1f, 0.01f);
+    light.SetTranslation(glm::vec3(0.f, 0.f, 2.f));
+    lights.push_back(light);
+}
+
+void InitSpotlights(std::vector<Spotlight>& lights, const unsigned int count)
+{
+    Spotlight light;
+    light.SetTranslation(glm::vec3(0.f, 0.f, 2.f));
+    lights.push_back(light);
 }
 
 void InitSimpleObjects(std::vector<Cube>& cubes, const unsigned int count)
@@ -303,17 +330,27 @@ void UpdateImGuiFPS(float dt)
     ImGui::End();
 }
 
-void UpdateImGuiLightColor(Light& light)
+void UpdateImGuiLightColor(Light& light, unsigned int index = 0)
 {
-    static float color[] = { 1.f, 1.f, 1.f };
-    static float ambientAndDiffuse[] = { 1.f, 1.f};
+    static float colors[40 * 3] = { 1.f };
+    static float ambientAndDiffuses[40 * 2] = { 1.f };
 
-    ImGui::Begin("Light Color ");
-    ImGui::ColorEdit3("", color);
-    ImGui::SliderFloat2("Ambient, Diffuse", ambientAndDiffuse, 0.f, 1.f);
-    light.SetLightByColor(glm::vec3(color[0], color[1], color[2]), 
-                          glm::vec3(ambientAndDiffuse[0]), glm::vec3(ambientAndDiffuse[1]));
+    float color[3] = { colors[index * 3], colors[index * 3 + 1], colors[index * 3 + 2] };
+    float ambientAndDiffuse[2] = { ambientAndDiffuses[index * 2], ambientAndDiffuses[index * 2 + 1] };
+
+    std::string title = "Light " + std::to_string(index);
+
+    ImGui::Begin(title.c_str());
+
+    ImGui::ColorEdit3("Color", &(colors[index * 3]));
+    ImGui::SliderFloat2("Ambient, Diffuse", &(ambientAndDiffuses[index * 2]), 0.f, 1.f);
+
     ImGui::End();
+
+    light.SetLightByColor(glm::vec3(colors[index * 3], colors[index * 3 + 1], colors[index * 3 + 2]),
+                          glm::vec3(ambientAndDiffuses[index * 2]), glm::vec3(ambientAndDiffuses[index * 2 + 1]));
+
+    light.SetColor(glm::vec4(colors[index * 3], colors[index * 3 + 1], colors[index * 3 + 2], 1.f));
 }
 
 int main(void)
@@ -351,11 +388,16 @@ int main(void)
     //InitSimpleObjects(objects, 0);
     InitObjects(objects, 10);
 
-    // light
-    Spotlight light;
-    light.SetTranslation(glm::vec3(0.f, 1.f, -2.f));
-    light.SetRotation(glm::vec3(0.2f, 0.f, 0.f));
-
+    // lights
+    std::vector<Light> lights;
+    std::vector<DirectionalLight> directionalLights;
+    std::vector<PointLight> pointLights;
+    std::vector<Spotlight> spotlights;
+    InitLights(lights, 0);
+    InitDirectionalLights(directionalLights, 0);
+    InitPointLights(pointLights, 0);
+    InitSpotlights(spotlights, 0);
+   
     // shaders
     Shader objectShader("res/shaders/Material.shader");
     Shader lightSourceShader("res/shaders/LightSource.shader");
@@ -382,10 +424,8 @@ int main(void)
 
         // create imgui windows
         UpdateImGuiFPS(deltaTime);
-        UpdateImGuiLightColor(light);
-
+        
         // update frame
-        UpdateTransform(window, &light, deltaTime);
         UpdateCamera(window, camera, deltaTime);
 
         // update projection and view matrices for object and light
@@ -395,24 +435,30 @@ int main(void)
         objectShader.SetUniform3f("u_ViewerPosition", camera.GetTranslation());
         objectShader.Unbind();
 
-        light.UpdateShader(objectShader);
-
-        // draw objects
-        /*for (auto& currentObject : objects)
+        for (auto& currLight : lights)
         {
-            // update model matrix and material of current object
-            objectShader.Bind();
-            objectShader.SetUniformMat4f("u_ModelMatrix", currentObject.GetModelMatrix());
-            objectShader.SetUniformMat3f("u_NormalMatrix", currentObject.GetNormalMatrix());
-            objectShader.SetUniform3f("u_Material.ambient", currentObject.GetSimpleMaterial().ambient);
-            objectShader.SetUniform3f("u_Material.diffuse", currentObject.GetSimpleMaterial().diffuse);
-            objectShader.SetUniform3f("u_Material.specular", currentObject.GetSimpleMaterial().specular);
-            objectShader.SetUniform1f("u_Material.shininess", currentObject.GetSimpleMaterial().shininess);
-            objectShader.Unbind();
+            UpdateImGuiLightColor(currLight, currLight.GetIndex());
+            currLight.UpdateShader(objectShader);
+        }
 
-            // draw object
-            renderer.Draw(currentObject.GetMesh(), objectShader);
-        }*/
+        for (auto& currLight : directionalLights)
+        {
+            UpdateImGuiLightColor(currLight, currLight.GetIndex() + 10);
+            currLight.UpdateShader(objectShader);
+        }
+
+        for (auto& currLight : pointLights)
+        {
+            UpdateImGuiLightColor(currLight, currLight.GetIndex() + 20);
+            currLight.UpdateShader(objectShader);
+        }
+
+        for (auto& currLight : spotlights)
+        {
+            UpdateTransform(window, &currLight, deltaTime);
+            UpdateImGuiLightColor(currLight, currLight.GetIndex() + 30);
+            currLight.UpdateShader(objectShader);
+        }
 
         for (auto& currentObject : objects)
         {
@@ -433,18 +479,51 @@ int main(void)
             currentObject.GetSpecularMap()->Unbind();
         }
 
-        
-        // update light source
-        lightSourceShader.Bind();
-        lightSourceShader.SetUniformMat4f("u_ModelMatrix", light.GetModelMatrix());
-        lightSourceShader.SetUniformMat4f("u_ViewMatrix", camera.GetViewMatrix());
-        lightSourceShader.SetUniformMat4f("u_ProjectionMatrix", camera.GetProjectionMatrix());
-        lightSourceShader.SetUniform4f("u_LightColor", light.GetColor());
-        lightSourceShader.Unbind();
+        // draw light sources
+        for (auto currLight : lights)
+        {
+            lightSourceShader.Bind();
+            lightSourceShader.SetUniformMat4f("u_ModelMatrix", currLight.GetModelMatrix());
+            lightSourceShader.SetUniformMat4f("u_ViewMatrix", camera.GetViewMatrix());
+            lightSourceShader.SetUniformMat4f("u_ProjectionMatrix", camera.GetProjectionMatrix());
+            lightSourceShader.SetUniform4f("u_LightColor", currLight.GetColor());
+            lightSourceShader.Unbind();
 
-        // draw light source
-        renderer.Draw(light.GetMesh(), lightSourceShader);
+            renderer.Draw(currLight.GetMesh(), lightSourceShader);
+        }
+        for (auto currLight : directionalLights)
+        {
+            lightSourceShader.Bind();
+            lightSourceShader.SetUniformMat4f("u_ModelMatrix", currLight.GetModelMatrix());
+            lightSourceShader.SetUniformMat4f("u_ViewMatrix", camera.GetViewMatrix());
+            lightSourceShader.SetUniformMat4f("u_ProjectionMatrix", camera.GetProjectionMatrix());
+            lightSourceShader.SetUniform4f("u_LightColor", currLight.GetColor());
+            lightSourceShader.Unbind();
 
+            renderer.Draw(currLight.GetMesh(), lightSourceShader);
+        }
+        for (auto currLight : pointLights)
+        {
+            lightSourceShader.Bind();
+            lightSourceShader.SetUniformMat4f("u_ModelMatrix", currLight.GetModelMatrix());
+            lightSourceShader.SetUniformMat4f("u_ViewMatrix", camera.GetViewMatrix());
+            lightSourceShader.SetUniformMat4f("u_ProjectionMatrix", camera.GetProjectionMatrix());
+            lightSourceShader.SetUniform4f("u_LightColor", currLight.GetColor());
+            lightSourceShader.Unbind();
+
+            renderer.Draw(currLight.GetMesh(), lightSourceShader);
+        }
+        for (auto currLight : spotlights)
+        {
+            lightSourceShader.Bind();
+            lightSourceShader.SetUniformMat4f("u_ModelMatrix", currLight.GetModelMatrix());
+            lightSourceShader.SetUniformMat4f("u_ViewMatrix", camera.GetViewMatrix());
+            lightSourceShader.SetUniformMat4f("u_ProjectionMatrix", camera.GetProjectionMatrix());
+            lightSourceShader.SetUniform4f("u_LightColor", currLight.GetColor());
+            lightSourceShader.Unbind();
+
+            renderer.Draw(currLight.GetMesh(), lightSourceShader);
+        }
         // render imgui 
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());

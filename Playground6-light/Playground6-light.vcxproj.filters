@@ -1444,5 +1444,14 @@
     <Image Include="res\specular_maps\box_specular.png">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="res\specular_maps\marble_dice_specular.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\specular_maps\marble_specular.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\specular_maps\scratched_metal_specular.png">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>

@@ -19,7 +19,6 @@ public:
 private:
 	Mesh m_Mesh;
 	glm::vec4 m_Color;
-
 };
 
 class Cube : public Cuboid
