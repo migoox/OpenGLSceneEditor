@@ -17,7 +17,8 @@ public:
 		m_Translation(glm::vec3(0.f)),
 		m_Right(glm::vec3(1.f, 0.f, 0.f)),
 		m_Up(glm::vec3(0.f, 1.f, 0.f)),
-		m_Forward(glm::vec3(0.f, 0.f, 1.f)) { }
+		m_Forward(glm::vec3(0.f, 0.f, 1.f))
+	{ }
 
 	~Transform() { }
 	
@@ -55,16 +56,16 @@ public:
 	inline glm::vec3 GetTranslation()		const		  { return m_Translation; }
 	
 	// Sets origin (anchor point, center of local axises) of model
-	inline void SetOrigin(glm::vec3 origin)			      { m_Origin = origin; }
+		   void SetOrigin(glm::vec3 origin)				  { m_Origin = origin; }
 
 	// Sets scale of the model
-	inline void SetScale(glm::vec3 scale)				  { m_Scale = scale; }
+		   void SetScale(glm::vec3 scale)				  { m_Scale = scale; }
 
 	// Sets quaternion defining global rotation, basing on euler angles in radians
 		   void SetRotation(glm::vec3 eulers_rad);
 
 	// Sets global translation
-	inline void SetTranslation(glm::vec3 translation)	  { m_Translation = translation; }
+		   void SetTranslation(glm::vec3 translation)	  { m_Translation = translation; }
 
 	// Rotates model in order to force forward to point at target
 		   void LookAt(glm::vec3 target, glm::vec3 up = glm::vec3(0.f, 1.f, 0.f));

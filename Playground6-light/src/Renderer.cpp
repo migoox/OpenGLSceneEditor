@@ -1,12 +1,13 @@
 #include "Renderer.h"
-#include <iostream>
 
-void Renderer::Clear() const
+glm::vec4 Renderer::s_ClearColor = glm::vec4(0.f, 0.f, 0.f, 1.f);
+
+void Renderer::Clear() 
 {
-        GLCall( glClear( GL_COLOR_BUFFER_BIT ) );
+    GLCall(glClear(GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
 }
 
-void Renderer::Draw(const VertexArray& va, const IndexBuffer& ib, const Shader& shader) const
+void Renderer::Draw(const VertexArray& va, const IndexBuffer& ib, const Shader& shader) 
 {
         shader.Bind();
         va.Bind();
@@ -17,7 +18,7 @@ void Renderer::Draw(const VertexArray& va, const IndexBuffer& ib, const Shader& 
         ib.Unbind();
 }
 
-void Renderer::Draw(const Mesh& mesh, const Shader& shader) const
+void Renderer::Draw(const Mesh& mesh, const Shader& shader) 
 {
     shader.Bind();
     mesh.Bind();
@@ -26,7 +27,7 @@ void Renderer::Draw(const Mesh& mesh, const Shader& shader) const
     shader.Unbind();
 }
 
-void Renderer::Draw(const Mesh& mesh, Shader& shader, const Transform& transform, const Camera& camera) const
+void Renderer::Draw(const Mesh& mesh, Shader& shader, const Transform& transform, const Camera& camera) 
 {
     shader.Bind();
     mesh.Bind();
@@ -41,7 +42,7 @@ void Renderer::Draw(const Mesh& mesh, Shader& shader, const Transform& transform
     shader.Unbind();
 }
 
-void Renderer::Draw(const Mesh& mesh, const Texture& texture, Shader& shader, const Transform& transform, const Camera& camera) const
+void Renderer::Draw(const Mesh& mesh, const Texture& texture, Shader& shader, const Transform& transform, const Camera& camera) 
 {
     shader.Bind();
     mesh.Bind();

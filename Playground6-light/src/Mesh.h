@@ -3,11 +3,11 @@
 
 #include "glm/glm.hpp"
 
-#include "abstraction/VertexArray.h"
-#include "abstraction/VertexBuffer.h"
-#include "abstraction/IndexBuffer.h"
-#include "abstraction/VertexBufferLayout.h"
-#include "abstraction/Shader.h"
+#include "VertexArray.h"
+#include "VertexBuffer.h"
+#include "IndexBuffer.h"
+#include "VertexBufferLayout.h"
+#include "Shader.h"
 
 struct Vertex
 {

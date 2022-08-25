@@ -12,16 +12,16 @@ glm::vec3 Transform::GetEulersDegrees() const
 
 glm::mat4 Transform::GetModelMatrix() const
 {
-	return  glm::translate(m_Translation) * 
-			glm::toMat4(m_Rotation) * 
-			glm::scale(m_Scale) * 
-			glm::translate(-m_Origin);
+	return  glm::translate(m_Translation) *
+		glm::toMat4(m_Rotation) *
+		glm::scale(m_Scale) *
+		glm::translate(-m_Origin);
 }
 
 glm::mat3 Transform::GetNormalMatrix() const
 {
 	return glm::mat3(glm::toMat4(m_Rotation) *
-					 glm::scale(glm::vec3(1.f / m_Scale.x, 1.f /  m_Scale.y, 1.f / m_Scale.z)));
+		glm::scale(glm::vec3(1.f / m_Scale.x, 1.f / m_Scale.y, 1.f / m_Scale.z)));
 }
 
 void Transform::SetRotation(glm::vec3 eulers_rad)
@@ -81,13 +81,12 @@ void Transform::Translate(glm::vec3 translation, Space relativeTo)
 {
 	if (relativeTo == Space::Local)
 	{
-		m_Translation += glm::mat3(m_Right, 
-								   m_Up, 
-								   m_Forward) * translation;
+		m_Translation += glm::mat3(m_Right,
+			m_Up,
+			m_Forward) * translation;
 	}
 	else
 	{
-		m_Translation += translation; 
+		m_Translation += translation;
 	}
 }
-

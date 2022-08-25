@@ -3,9 +3,10 @@
 #include "Transfrom.h"
 #include "Material.h"
 #include "Texture.h"
+#include "SceneObject.h"
 #include "glm/glm.hpp"
 
-class Cuboid : public Transform
+class Cuboid : public SceneObject
 {
 public:
 	Cuboid(float width, float length, float height);
@@ -15,6 +16,22 @@ public:
 	
 	void SetColor(glm::vec4 color) { m_Color = color; }
 	glm::vec4 GetColor() const { return m_Color; }
+
+	virtual void ImGuiDrawInfoPanel() override
+	{
+		std::string text;
+
+		text = "Position" + glm::to_string(this->GetTranslation());
+		ImGui::Text(text.c_str());
+
+		text = "Rotation" + glm::to_string(this->GetEulers());
+		ImGui::Text(text.c_str());
+
+		text = "Scale" + glm::to_string(this->GetScale());
+		ImGui::Text(text.c_str());
+	}
+
+	virtual std::string GetName() override { return "Cuboid"; }
 
 private:
 	Mesh m_Mesh;

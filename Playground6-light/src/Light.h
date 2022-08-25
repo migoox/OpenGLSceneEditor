@@ -1,17 +1,19 @@
 #pragma once
 #include "Cuboid.h"
+#include "SceneObject.h"
 
-class Light : public Cuboid
+class Light : public SceneObject
 {
 public:
 	Light() : 
-		Cuboid(0.1f, 0.1f, 0.1f), 
-		m_Ambient(glm::vec3(1.f)),
-		m_Diffuse(glm::vec3(1.f)),
-		m_Specular(glm::vec3(1.f)) 
+		m_Cuboid(Cuboid(0.1f, 0.1f, 0.1f)), 
+		m_Ambient(glm::vec3(0.f)),
+		m_Diffuse(glm::vec3(0.f)),
+		m_Specular(glm::vec3(0.f)) 
 	{
 		this->SetOrigin(glm::vec3(0.05f));
 		m_Index = m_NextIndex++;
+		m_Cuboid.SetColor(glm::vec4(0.f, 0.f, 0.f, 1.f));
 	}
 
 	~Light() { }
@@ -33,6 +35,8 @@ public:
 
 	glm::vec3 GetPosition() const { return this->GetTranslation(); }
 
+	Cuboid& GetRepresentation() { return m_Cuboid; }
+
 	virtual void UpdateShader(Shader& shader) 
 	{ 
 		shader.Bind();
@@ -46,10 +50,31 @@ public:
 
 	virtual unsigned int GetIndex() { return m_Index; }
 
+	virtual void ImGuiDrawInfoPanel() override
+	{
+		//ImGui::SliderFloat3("Ambient", (float*)&m_Ambient, 0.f, 1.f);
+		//ImGui::SliderFloat3("Diffuse", (float*)&m_Diffuse, 0.f, 1.f);
+		//ImGui::SliderFloat3("Specular", (float*)&m_Specular, 0.f, 1.f);
+
+		ImGui::ColorEdit3("Color", m_ImGuiColor);
+		ImGui::SliderFloat2("Ambient, Diffuse", m_ImGuiAmbientDiff, 0.f, 1.f);
+
+		this->SetLightByColor(glm::vec3(m_ImGuiColor[0], m_ImGuiColor[1], m_ImGuiColor[2]),
+			glm::vec3(m_ImGuiAmbientDiff[0]), glm::vec3(m_ImGuiAmbientDiff[1]));
+		m_Cuboid.SetColor(glm::vec4(m_ImGuiColor[0], m_ImGuiColor[1], m_ImGuiColor[2], 1.f));
+	}
+
+	virtual std::string GetName() override { return "Light"; }
+
 private:
+	float m_ImGuiColor[3];
+	float m_ImGuiAmbientDiff[2];
+
 	glm::vec3 m_Ambient;
 	glm::vec3 m_Diffuse;
 	glm::vec3 m_Specular;
+
+	Cuboid m_Cuboid;
 
 	static unsigned int m_NextIndex;
 	unsigned int m_Index;
@@ -75,6 +100,13 @@ public:
 		shader.SetUniform1i("u_DirectionalLightsCount", m_NextIndex);
 		shader.Unbind();
 	}
+
+	virtual void ImGuiDrawInfoPanel() override
+	{
+		Light::ImGuiDrawInfoPanel();
+	}
+
+	virtual std::string GetName() override { return "Directional Light"; }
 
 	virtual unsigned int GetIndex() override { return m_Index; }
 private:
@@ -123,6 +155,16 @@ public:
 		shader.Unbind();
 	}
 
+	virtual void ImGuiDrawInfoPanel() override
+	{
+		Light::ImGuiDrawInfoPanel();
+		//ImGui::SliderFloat("Constant", (float*)&m_Constant, 0.f, 1.f);
+		ImGui::SliderFloat("Linear", (float*)&m_Linear, 0.f, 1.f);
+		ImGui::SliderFloat("Quadratic", (float*)&m_Quadratic, 0.f, 1.f);
+	}
+
+	virtual std::string GetName() override { return "Point Light"; }
+
 	virtual unsigned int GetIndex() override { return m_Index; }
 private:
 	float m_Constant;
@@ -163,6 +205,16 @@ public:
 		shader.SetUniform1i("u_SpotlightsCount", m_NextIndex);
 		shader.Unbind();
 	}
+
+	virtual void ImGuiDrawInfoPanel() override
+	{
+		Light::ImGuiDrawInfoPanel();
+		//ImGui::SliderFloat("Constant", (float*)&m_Constant, 0.f, 1.f);
+		ImGui::SliderFloat("CutOffAngle", (float*)&m_CutOffAngle, 0.f, glm::radians(100.f));
+		ImGui::SliderFloat("OuterCutOffAngle", (float*)&m_OuterCutOffAngle, 0.f, glm::radians(170.f));
+	}
+
+	virtual std::string GetName() override { return "Spotlight"; }
 
 	virtual unsigned int GetIndex() override { return m_Index; }
 private:
