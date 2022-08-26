@@ -2,18 +2,17 @@
 
 void FPCamera::UpdateCamera(float dt)
 {
-	if (m_Freezed)
-	{
-		m_LastPos = glm::vec2(0.f);
-		return;
-	}
-
 	glm::vec2 mouse = Input::GetWindowMousePosition();
 
 	float offsetX = glm::radians(-m_Sensitivity * (m_LastPos.x - mouse.x));
 	float offsetY = glm::radians(m_Sensitivity * (m_LastPos.y - mouse.y));
 
 	m_LastPos = mouse;
+
+	if (m_Freezed)
+	{
+		return;
+	}
 
 	this->Rotate(glm::vec3(0.f, offsetX, 0.f), Space::Global);
 	this->Rotate(glm::vec3(offsetY, 0.f, 0.f), Space::Local);

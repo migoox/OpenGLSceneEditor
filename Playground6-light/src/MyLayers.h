@@ -134,6 +134,7 @@ public:
 
     virtual void OnImGuiRender()
     {
+        std::string text;
 
         ImGui::Begin("Objects panel");
         ImGui::TextColored(ImVec4(1, 1, 0, 1), "Objects");
@@ -144,9 +145,8 @@ public:
             ImGui::BeginChild("left pane", ImVec2(150, 0), true);
             for (int i = 0; i < m_Objects.size(); i++)
             {
-                char label[128];
-                sprintf_s(label, "MyObject %d", i);
-                if (ImGui::Selectable(label, selected == i))
+                text = "[" + std::to_string(i) + "] " + m_Objects[i]->GetName();
+                if (ImGui::Selectable(text.c_str(), selected == i))
                     selected = i;
             }
             ImGui::EndChild();
@@ -157,7 +157,9 @@ public:
         {
             ImGui::BeginGroup();
             ImGui::BeginChild("item view", ImVec2(0, -ImGui::GetFrameHeightWithSpacing())); // Leave room for 1 line below us
-            std::string text = "Type: " + m_Objects[selected]->GetName();
+            
+            text = "Type: " + m_Objects[selected]->GetName();
+
             ImGui::Text(text.c_str());
             ImGui::Separator();
             if (ImGui::BeginTabBar("##Tabs", ImGuiTabBarFlags_None))
