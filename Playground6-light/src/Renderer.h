@@ -5,6 +5,7 @@
 #include "Debug.h"
 #include "VertexArray.h"
 #include "IndexBuffer.h"
+#include "Material.h"
 #include "Shader.h"
 #include "Texture.h"
 #include "Camera.h"
@@ -16,6 +17,11 @@ public:
     static void Clear();
     static void Draw(const VertexArray& va, const IndexBuffer& ib, const Shader& shader);
     static void Draw(const Mesh& mesh, const Shader& shader);
+
+
+    static void Draw(const Mesh& mesh, Shader& shader, const Material& material);
+
+
     static void Draw(const Mesh& mesh, Shader& shader, const Transform& transform, const Camera& camera);
     static void Draw(const Mesh& mesh, const Texture& texture, Shader& shader, const Transform& transform, const Camera& camera);
 

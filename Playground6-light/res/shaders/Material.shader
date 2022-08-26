@@ -30,8 +30,12 @@ void main()
 
 struct Material
 {
-	sampler2D diffuse;
-	sampler2D specular;
+	sampler2D diffuse0;
+	sampler2D diffuse1;
+	sampler2D diffuse2;
+	sampler2D specular0;
+	sampler2D specular1;
+	sampler2D specular2;
 	float shininess;
 };
 
@@ -131,14 +135,14 @@ void main()
 vec3 CalcPhong(vec3 lightDir, vec3 lAmbient, vec3 lDiffuse, vec3 lSpecular)
 {
 	// ambient lighting
-	vec3 ambient = lAmbient * vec3(texture(u_Material.diffuse, TexCoords));
+	vec3 ambient = lAmbient * vec3(texture(u_Material.diffuse0, TexCoords));
 
 	// diffuse lighting
 	vec3 norm = normalize(Normal);										  // normalize normal in case it isn't normalized
 
 	float diffuseImpact = max(dot(norm, lightDir), 0.0);		      // get similarity of vectors 
 																		  // diff <= 0 => opposite direction => no impact
-	vec3 diffuse = lDiffuse * diffuseImpact * vec3(texture(u_Material.diffuse, TexCoords));
+	vec3 diffuse = lDiffuse * diffuseImpact * vec3(texture(u_Material.diffuse0, TexCoords));
 
 	// specular lighting
 	vec3 viewDir = normalize(u_ViewerPosition - FragmentPosition);		  // viewer (from fragment towards viewer)
@@ -151,7 +155,7 @@ vec3 CalcPhong(vec3 lightDir, vec3 lAmbient, vec3 lDiffuse, vec3 lSpecular)
 
 	if (specularImpact > 0.0) specularImpact = pow(specularImpact, u_Material.shininess);
 
-	vec3 specular = lSpecular * specularImpact * vec3(texture(u_Material.specular, TexCoords));
+	vec3 specular = lSpecular * specularImpact * vec3(texture(u_Material.specular0, TexCoords));
 
 	return (ambient + diffuse + specular);
 }
@@ -178,7 +182,7 @@ vec3 CalcPointLight(PointLight light)
 vec3 CalcSpotlight(Spotlight light)
 {
 	// ambient lighting
-	vec3 ambient = light.ambient * vec3(texture(u_Material.diffuse, TexCoords));
+	vec3 ambient = light.ambient * vec3(texture(u_Material.diffuse0, TexCoords));
 
 	// spotlight 
 	float cosTheta = dot(normalize(FragmentPosition - light.position), normalize(light.direction));
@@ -197,7 +201,7 @@ vec3 CalcSpotlight(Spotlight light)
 
 	float diffuseImpact = max(dot(norm, lightDir), 0.0);				  
 
-	vec3 diffuse = light.diffuse * diffuseImpact * vec3(texture(u_Material.diffuse, TexCoords));
+	vec3 diffuse = light.diffuse * diffuseImpact * vec3(texture(u_Material.diffuse0, TexCoords));
 
 	// specular lighting
 	vec3 viewDir = normalize(u_ViewerPosition - FragmentPosition);
@@ -207,7 +211,7 @@ vec3 CalcSpotlight(Spotlight light)
 
 	if (specularImpact > 0.0) specularImpact = pow(specularImpact, u_Material.shininess);
 
-	vec3 specular = light.specular * specularImpact * vec3(texture(u_Material.specular, TexCoords));
+	vec3 specular = light.specular * specularImpact * vec3(texture(u_Material.specular0, TexCoords));
 
 	return ambient + intensity * diffuse + intensity * specular;
 }

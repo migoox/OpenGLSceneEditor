@@ -5,9 +5,9 @@
 
 struct Material
 {
-	std::shared_ptr<Texture> SpecularMap;
-	std::shared_ptr<Texture> Texture;
-	float shininess;
+	std::vector<std::shared_ptr<Texture>> SpecularMap;
+	std::vector<std::shared_ptr<Texture>> Texture;
+	float Shininess;
 };
 
 struct SimpleMaterial

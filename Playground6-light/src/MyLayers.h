@@ -114,19 +114,10 @@ public:
                 ObjectShader->Bind();
                 ObjectShader->SetUniformMat4f("u_ModelMatrix", cube->GetModelMatrix());
                 ObjectShader->SetUniformMat3f("u_NormalMatrix", cube->GetNormalMatrix());
-                ObjectShader->SetUniform1i("u_Material.diffuse", 0);
-                ObjectShader->SetUniform1i("u_Material.specular", 1);
-                ObjectShader->SetUniform1f("u_Material.shininess", cube->GetMaterial().shininess);
                 ObjectShader->Unbind();
 
                 // draw object
-                cube->GetTexture()->Bind(0);
-                cube->GetSpecularMap()->Bind(1);
-
-                Renderer::Draw(cube->GetMesh(), *ObjectShader);
-
-                cube->GetTexture()->Unbind();
-                cube->GetSpecularMap()->Unbind();
+                Renderer::Draw(cube->GetMesh(), *ObjectShader, cube->GetMaterial());
             }
         }
 
@@ -190,8 +181,8 @@ private:
         std::shared_ptr<Texture> texture2 = std::shared_ptr<Texture>(new Texture("res/textures/box.png"));
         std::shared_ptr<Texture> specularMap2 = std::shared_ptr<Texture>(new Texture("res/specular_maps/box_specular.png"));
 
-        Material mat1 = { specularMap1, texture1, 32.f };
-        Material mat2 = { specularMap2, texture2, 256.f };
+        Material mat1 = { {specularMap1}, {texture1}, 32.f };
+        Material mat2 = { {specularMap2}, {texture2}, 256.f };
 
         for (unsigned int i = 0; i < count; i++)
         {

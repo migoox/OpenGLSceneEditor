@@ -50,9 +50,6 @@ public:
 	void SetMaterial(Material material) { m_Material = material; }
 	Material GetMaterial() const { return m_Material; }
 
-	std::shared_ptr<Texture> GetTexture() const { return m_Material.Texture; }
-	std::shared_ptr<Texture> GetSpecularMap() const { return m_Material.SpecularMap; }
-
 private:
 	SimpleMaterial m_SimpleMaterial;
 	Material m_Material;

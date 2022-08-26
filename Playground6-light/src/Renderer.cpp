@@ -9,13 +9,13 @@ void Renderer::Clear()
 
 void Renderer::Draw(const VertexArray& va, const IndexBuffer& ib, const Shader& shader) 
 {
-        shader.Bind();
-        va.Bind();
-        ib.Bind();
-        GLCall( glDrawElements(GL_TRIANGLES, ib.GetCount(), GL_UNSIGNED_INT, nullptr) );
-        shader.Unbind();
-        va.Unbind();
-        ib.Unbind();
+    shader.Bind();
+    va.Bind();
+    ib.Bind();
+    GLCall( glDrawElements(GL_TRIANGLES, ib.GetCount(), GL_UNSIGNED_INT, nullptr) );
+    shader.Unbind();
+    va.Unbind();
+    ib.Unbind();
 }
 
 void Renderer::Draw(const Mesh& mesh, const Shader& shader) 
@@ -23,6 +23,44 @@ void Renderer::Draw(const Mesh& mesh, const Shader& shader)
     shader.Bind();
     mesh.Bind();
     GLCall(glDrawElements(GL_TRIANGLES, mesh.GetIndices().size(), GL_UNSIGNED_INT, nullptr));
+    mesh.Unbind();
+    shader.Unbind();
+}
+
+void Renderer::Draw(const Mesh& mesh, Shader& shader, const Material& material)
+{
+    shader.Bind();
+    mesh.Bind();
+
+    std::string name;
+    unsigned int slot = 0;
+
+    for (unsigned int i = 0; i < material.Texture.size(); i++)
+    {
+        material.Texture[i]->Bind(slot);
+        name = "u_Material.diffuse" + std::to_string(i);
+        shader.SetUniform1i(name.c_str(), slot);
+        slot++;
+    }
+
+    for (unsigned int i = 0; i < material.SpecularMap.size(); i++)
+    {
+        material.SpecularMap[i]->Bind(slot);
+        name = "u_Material.specular" + std::to_string(i);
+        shader.SetUniform1i(name.c_str(), slot);
+        slot++;
+    }
+
+    shader.SetUniform1f("u_Material.shininess", material.Shininess);
+
+    GLCall(glDrawElements(GL_TRIANGLES, mesh.GetIndices().size(), GL_UNSIGNED_INT, nullptr));
+
+    for (unsigned int i = 0; i < material.Texture.size(); i++)
+        material.Texture[i]->Unbind();
+
+    for (unsigned int i = 0; i < material.SpecularMap.size(); i++)
+        material.SpecularMap[i]->Unbind();
+
     mesh.Unbind();
     shader.Unbind();
 }
