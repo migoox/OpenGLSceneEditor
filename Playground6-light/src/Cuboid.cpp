@@ -1,6 +1,6 @@
 #include "Cuboid.h"
 
-Cuboid::Cuboid(float width, float length, float height)
+void Cuboid::Create(float width, float length, float height)
 {
 	//    3--------2
 	//   /|       /|
@@ -89,4 +89,9 @@ Cuboid::Cuboid(float width, float length, float height)
 
 Cuboid::~Cuboid()
 {
+}
+
+void Cube::Create(float x)
+{
+	Cuboid::Create(x, x, x);
 }

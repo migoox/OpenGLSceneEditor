@@ -3,35 +3,20 @@
 #include "Transfrom.h"
 #include "Material.h"
 #include "Texture.h"
-#include "SceneObject.h"
 #include "glm/glm.hpp"
 
-class Cuboid : public SceneObject
+class Cuboid : public Transform
 {
 public:
-	Cuboid(float width, float length, float height);
+	Cuboid() { }
 	~Cuboid();
+
+	void Create(float width, float length, float height);
 
 	const Mesh& GetMesh() const { return m_Mesh; }
 	
 	void SetColor(glm::vec4 color) { m_Color = color; }
 	glm::vec4 GetColor() const { return m_Color; }
-
-	virtual void ImGuiDrawInfoPanel() override
-	{
-		std::string text;
-
-		text = "Position" + glm::to_string(this->GetTranslation());
-		ImGui::Text(text.c_str());
-
-		text = "Rotation" + glm::to_string(this->GetEulers());
-		ImGui::Text(text.c_str());
-
-		text = "Scale" + glm::to_string(this->GetScale());
-		ImGui::Text(text.c_str());
-	}
-
-	virtual std::string GetName() override { return "Cuboid"; }
 
 private:
 	Mesh m_Mesh;
@@ -41,8 +26,11 @@ private:
 class Cube : public Cuboid
 {
 public:
-	Cube(float x) : Cuboid(x, x, x) { }
+	Cube() { }
 	~Cube() { }
+
+	void Create(float width, float length, float height) = delete;
+	void Create(float x);
 
 	void SetSimpleMaterial(SimpleMaterial material) { m_SimpleMaterial = material; }
 	SimpleMaterial GetSimpleMaterial() const { return m_SimpleMaterial; }
