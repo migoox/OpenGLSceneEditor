@@ -6,7 +6,7 @@
 #include "Layer.h"
 #include "FPCamera.h"
 #include "Cuboid.h"
-
+#include "Application.h"
 // application layer type child
 class Scene : public Layer
 {
@@ -20,6 +20,7 @@ private:
 	void InitCubes(unsigned int count = 10);
 	void InitLights();
 	void UpdateCamera(float dTime);
+	void UpdateTransform(GLFWwindow* window, Transform* transform, float dt);
 
 private:
 	std::vector<Node> m_Nodes;

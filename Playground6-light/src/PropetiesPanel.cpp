@@ -65,10 +65,10 @@ void UIPropetiesPanelTransformSection::Display(Node& node)
 		ImGui::PopStyleColor();
 
 	ImGui::Separator();
-	ImGui::Text("Eulers");
+	ImGui::Text("Eulers (XYZ)");
 
 		ImGui::PushStyleColor(ImGuiCol_FrameBg, IM_COL32(255, 0, 0, 100));
-		ImGui::InputFloat("roll", m_Eulers);
+		ImGui::InputFloat("pitch", m_Eulers);
 		ImGui::PopStyleColor();
 
 
@@ -78,7 +78,7 @@ void UIPropetiesPanelTransformSection::Display(Node& node)
 
 
 		ImGui::PushStyleColor(ImGuiCol_FrameBg, IM_COL32(0, 0, 255, 100));
-		ImGui::InputFloat("pitch", &m_Eulers[2]);
+		ImGui::InputFloat("roll", &m_Eulers[2]);
 		ImGui::PopStyleColor();
 
 	ImGui::Separator();

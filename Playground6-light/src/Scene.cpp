@@ -43,7 +43,8 @@ void Scene::OnDetach()
 void Scene::OnUpdate(float dTime)
 {
 	UpdateCamera(dTime);
-
+	if (m_SelectedIndex >= 0)
+		UpdateTransform(Application::GetWindowHandle(), &m_Nodes[m_SelectedIndex].GetObjectTransform(), dTime);
 	// update lights
 	for (auto& node : m_Nodes)
 	{
@@ -142,9 +143,12 @@ void Scene::InitCubes(unsigned int count)
 		glm::vec3 dir = glm::normalize(glm::vec3(random(), random(), random()));
 		float magnitude = 0.5f + ((random() + 1.f) / 2.f) * 1.f;
 		cube->Translate(dir * magnitude);
-		cube->SetRotation(glm::vec3(random() * glm::pi<float>(),
+
+		/*cube->SetRotation(glm::vec3(random() * glm::pi<float>(),
 				random() * glm::pi<float>(),
-				random() * glm::pi<float>()));
+				random() * glm::pi<float>()));*/
+		cube->SetRotation(glm::vec3(0.f, 0.f, 0.f));
+
 		cube->Translate(glm::vec3(0.f, 0.f, 2.f));
 
 		m_Nodes.push_back(node);
@@ -221,4 +225,75 @@ void Scene::UpdateCamera(float dTime)
 	LightSourceShader->SetUniformMat4f("u_ViewMatrix", m_Camera.GetViewMatrix());
 	LightSourceShader->SetUniformMat4f("u_ProjectionMatrix", m_Camera.GetProjectionMatrix());
 	LightSourceShader->Unbind();
+}
+
+void Scene::UpdateTransform(GLFWwindow* window, Transform* transform, float dt)
+{
+	const int rotSpeed = 2 * glm::pi<float>() / 2.0f;
+	const int moveSpeed = 2.5f;
+	int state;
+	float roll = 0.f, pitch = 0.f, yaw = 0.f;
+
+	state = glfwGetKey(window, GLFW_KEY_Z);
+	if (state == GLFW_PRESS)
+	{
+		pitch = rotSpeed * dt;
+	}
+
+	state = glfwGetKey(window, GLFW_KEY_X);
+	if (state == GLFW_PRESS)
+	{
+		yaw = rotSpeed * dt;
+	}
+
+	state = glfwGetKey(window, GLFW_KEY_C);
+	if (state == GLFW_PRESS)
+	{
+		roll = rotSpeed * dt;
+	}
+	state = glfwGetKey(window, GLFW_KEY_LEFT_CONTROL);
+	if (state == GLFW_PRESS)
+	{
+		transform->Rotate(glm::vec3(pitch, yaw, roll), Space::Global);
+	}
+	else
+	{
+		transform->Rotate(glm::vec3(pitch, yaw, roll), Space::Local);
+	}
+
+	state = glfwGetKey(window, GLFW_KEY_I);
+	if (state == GLFW_PRESS)
+	{
+		transform->Translate(glm::vec3(0.00f, 0.0f, moveSpeed * dt), Space::Local);
+	}
+
+	state = glfwGetKey(window, GLFW_KEY_K);
+	if (state == GLFW_PRESS)
+	{
+		transform->Translate(glm::vec3(0.00f, 0.0f, -moveSpeed * dt), Space::Local);
+	}
+
+	state = glfwGetKey(window, GLFW_KEY_J);
+	if (state == GLFW_PRESS)
+	{
+		transform->Translate(glm::vec3(-moveSpeed * dt, 0.0f, 0.f), Space::Local);
+	}
+
+	state = glfwGetKey(window, GLFW_KEY_L);
+	if (state == GLFW_PRESS)
+	{
+		transform->Translate(glm::vec3(moveSpeed * dt, 0.0f, 0.f), Space::Local);
+	}
+
+	state = glfwGetKey(window, GLFW_KEY_P);
+	if (state == GLFW_PRESS)
+	{
+		transform->Translate(glm::vec3(0.0f, moveSpeed * dt, 0.0f), Space::Local);
+	}
+
+	state = glfwGetKey(window, GLFW_KEY_O);
+	if (state == GLFW_PRESS)
+	{
+		transform->Translate(glm::vec3(0.0f, -moveSpeed * dt, 0.0f), Space::Local);
+	}
 }

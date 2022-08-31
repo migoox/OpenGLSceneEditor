@@ -70,19 +70,21 @@ public:
 	// Rotates model in order to force forward to point at target
 		   void LookAt(glm::vec3 target, glm::vec3 up = glm::vec3(0.f, 1.f, 0.f));
 
-	// Rotates model (local or global)
-		   void Rotate(glm::vec3 eulers_rad, Space relativeTo = Space::Local);
+	// Rotates model (local or global), each component of vec3 represents delta angle of rotation 
+	// around axis x, y, z (no eulers rotation axises, quaternions are used)
+		   void Rotate(glm::vec3 delta_radians, Space relativeTo = Space::Local);
 
 	// Rotates around axis anchored in specific point
 		   void RotateAround(float euler_rad, glm::vec3 point, glm::vec3 axis);
 
 	// Moves model by given vector (local or global)
 		   void Translate(glm::vec3 translation, Space relativeTo = Space::Global);
-
 private:
 	glm::vec3 m_Right;
 	glm::vec3 m_Up;
 	glm::vec3 m_Forward;
+
+	glm::vec3 m_Eulers;
 
 	glm::vec3 m_Origin;
 	glm::vec3 m_Scale;
