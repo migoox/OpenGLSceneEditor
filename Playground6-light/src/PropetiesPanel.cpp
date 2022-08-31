@@ -35,7 +35,7 @@ void UIPropetiesPanelTransformSection::Display(Node& node)
 {
 	auto& trans = node.GetObjectTransform();
 	auto pos = trans.GetTranslation();
-	auto rot = trans.GetEulersDegrees();
+	auto rot = trans.GetAnglesDegrees();
 	auto scal = trans.GetScale();
 
 	m_Position[0] = pos.x;	m_Position[1] = pos.y;	m_Position[2] = pos.z;

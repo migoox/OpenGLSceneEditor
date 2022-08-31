@@ -44,10 +44,10 @@ public:
 	inline glm::vec3 GetScale()				const		  { return m_Scale; }
 
 	// Returns rotation angles in radians
-		   glm::vec3 GetEulers()			const;
+		   glm::vec3 GetAngles()			const;
 
 	// Returns rotation angles in degrees
-		   glm::vec3 GetEulersDegrees()		const;
+		   glm::vec3 GetAnglesDegrees()		const;
 
 	// Returns quaternion which defines rotation of model
 	inline glm::quat GetQuaternion()		const		  { return m_Rotation; }
@@ -61,8 +61,9 @@ public:
 	// Sets scale of the model
 		   void SetScale(glm::vec3 scale)				  { m_Scale = scale; }
 
-	// Sets quaternion defining global rotation, basing on euler angles in radians
-		   void SetRotation(glm::vec3 eulers_rad);
+	// Sets quaternion defining global rotation, each component of vec3 represents angle of rotation 
+	// around axis x, y, z (no eulers rotation axises, quaternions are used)
+		   void SetRotation(glm::vec3 angles);
 
 	// Sets global translation
 		   void SetTranslation(glm::vec3 translation)	  { m_Translation = translation; }
@@ -84,7 +85,7 @@ private:
 	glm::vec3 m_Up;
 	glm::vec3 m_Forward;
 
-	glm::vec3 m_Eulers;
+	glm::vec3 m_Angles;
 
 	glm::vec3 m_Origin;
 	glm::vec3 m_Scale;

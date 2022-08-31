@@ -1,13 +1,13 @@
 #include "Transfrom.h"
 
-glm::vec3 Transform::GetEulersDegrees() const
+glm::vec3 Transform::GetAnglesDegrees() const
 {
-	return glm::degrees(m_Eulers);
+	return glm::degrees(m_Angles);
 }
 
-glm::vec3 Transform::GetEulers() const
+glm::vec3 Transform::GetAngles() const
 {
-	return m_Eulers;
+	return m_Angles;
 }
 
 glm::mat4 Transform::GetModelMatrix() const
@@ -35,7 +35,7 @@ void Transform::SetRotation(glm::vec3 eulers_rad)
 	m_Up = rotMat * glm::vec4(0.f, 1.f, 0.f, 1.f);
 	m_Forward = rotMat * glm::vec4(0.f, 0.f, 1.f, 1.f);
 
-	m_Eulers = eulers_rad;
+	m_Angles = eulers_rad;
 }
 
 void Transform::LookAt(glm::vec3 target, glm::vec3 up)
@@ -72,7 +72,7 @@ void Transform::Rotate(glm::vec3 eulers_rad, Space relativeTo)
 	m_Up = rotMat * glm::vec4(0.f, 1.f, 0.f, 1.f);
 	m_Forward = rotMat * glm::vec4(0.f, 0.f, 1.f, 1.f);
 
-	m_Eulers = glm::eulerAngles(m_Rotation);
+	m_Angles += eulers_rad;
 }
 
 void Transform::RotateAround(float euler_rad, glm::vec3 point, glm::vec3 axis)

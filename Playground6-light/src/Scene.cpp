@@ -86,7 +86,7 @@ void Scene::OnUpdate(float dTime)
 	{
 		auto trans = m_Nodes[m_SelectedIndex].GetObjectTransform();
 		m_Selection.SetTranslation(trans.GetTranslation());
-		m_Selection.SetRotation(trans.GetEulers());
+		m_Selection.SetRotation(trans.GetAngles());
 		LightSourceShader->Bind();
 		LightSourceShader->SetUniformMat4f("u_ModelMatrix", m_Selection.GetModelMatrix());
 		LightSourceShader->SetUniformMat3f("u_NormalMatrix", m_Selection.GetNormalMatrix());
