@@ -24,7 +24,12 @@ void UIPropetiesPanel::Display(Node& node)
 		ImGui::InputText("Name ", &name);
 		node.SetName(name);
 	}
-
+	static bool visibility = true;
+	{
+		visibility = node.IsVisible();
+		ImGui::Checkbox("Visibility", &visibility);
+		node.SetVisibility(visibility);
+	}
 	m_TransformSection.Display(node);
 	m_LightSection.Display(node);
 	m_ModelSection.Display(node);

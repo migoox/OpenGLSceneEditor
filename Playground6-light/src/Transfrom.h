@@ -65,8 +65,12 @@ public:
 		   void SetScale(glm::vec3 scale)				  { m_Scale = scale; }
 
 	// Sets quaternion defining global rotation, each component of vec3 represents angle of rotation 
-	// around axis x, y, z (no eulers rotation axises, quaternions are used)
-		   void SetEulers(glm::vec3 angles);
+	// around axis x, y, z (no eulers rotation axises, quaternions are used). Input expected in radians.
+		   void SetEulers(glm::vec3 eulers_rad);
+
+	// Sets quaternion defining global rotation, each component of vec3 represents angle of 
+    // around axis x, y, z (no eulers rotation axises, quaternions are used). Input expected in degrees.
+		   void SetEulersDegrees(glm::vec3 eulers_dg);
 
 	// Sets global translation
 		   void SetTranslation(glm::vec3 translation)	  { m_Translation = translation; }

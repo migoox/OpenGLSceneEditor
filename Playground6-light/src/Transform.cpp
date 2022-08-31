@@ -36,6 +36,11 @@ void Transform::SetEulers(glm::vec3 eulers_rad)
 	m_Eulers = eulers_rad;
 }
 
+void Transform::SetEulersDegrees(glm::vec3 angles_dg)
+{
+	SetEulers(glm::radians(angles_dg));
+}
+
 void Transform::LookAt(glm::vec3 target, glm::vec3 up)
 {
 	// "-" appears because +z is forward axis and lookAt needs vector opposite to it

@@ -32,7 +32,11 @@ void UINodeTreePanel::Display(std::vector<Node>& nodes, int& selectedIndex)
     ImGui::BeginChild("tree", ImVec2(0, 200), true);
     for (int i = 0; i < nodes.size(); i++)
     {
-        label = "[" + std::to_string(i) + "] " + nodes[i].GetName();
+        if(nodes[i].IsVisible())
+            label = "[" + std::to_string(i) + "] " + nodes[i].GetName();
+        else
+            label = "[" + std::to_string(i) + "] " + "[invisible]" + nodes[i].GetName();
+
         if (ImGui::Selectable(label.c_str(), selectedIndex == i))
             selectedIndex = i;
     }

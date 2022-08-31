@@ -43,6 +43,8 @@ void Scene::OnUpdate(float dTime)
 	// update lights
 	for (auto& node : m_Nodes)
 	{
+		if (!node.IsVisible()) continue;
+
 		if (node.GetObjectType() == typeid(Light).hash_code() ||
 			node.GetObjectType() == typeid(DirectionalLight).hash_code() ||
 			node.GetObjectType() == typeid(PointLight).hash_code() ||
@@ -64,8 +66,11 @@ void Scene::OnUpdate(float dTime)
 	// update cuboids
 	for (auto& node : m_Nodes)
 	{
+		if (!node.IsVisible()) continue;
+
 		if (node.GetObjectType() == typeid(Cube).hash_code())
 		{
+
 			auto cube = static_cast<Cube*>(node.GetObject().get());
 
 			ObjectShader->Bind();
@@ -133,10 +138,9 @@ void Scene::InitCubes(unsigned int count)
 		float magnitude = 0.5f + ((random() + 1.f) / 2.f) * 1.f;
 		cube->Translate(dir * magnitude);
 
-		/*cube->SetRotation(glm::vec3(random() * glm::pi<float>(),
+		cube->SetEulers(glm::vec3(random() * glm::pi<float>(),
 				random() * glm::pi<float>(),
-				random() * glm::pi<float>()));*/
-		cube->SetEulers(glm::vec3(0.f, 0.f, 0.f));
+				random() * glm::pi<float>()));
 
 		cube->Translate(glm::vec3(0.f, 0.f, 2.f));
 

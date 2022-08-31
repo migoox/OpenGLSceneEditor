@@ -5,7 +5,7 @@
 class Node
 {
 public:
-	Node() : m_Blank(true), m_Name("no name") { }
+	Node() : m_Blank(true), m_Name("no name"), m_Visibilty(true) { }
 	~Node() { }
 
 	// TO DO: parent/child
@@ -37,9 +37,13 @@ public:
 
 	Transform& GetObjectTransform() { return *m_SceneObject; }
 
+	bool IsVisible() const { return m_Visibilty; }
+	void SetVisibility(bool visibility) { m_Visibilty = visibility; }
+
 private:
 	std::shared_ptr<Transform> m_SceneObject;
 	std::string m_Name;
 	size_t m_ObjectType;
 	bool m_Blank;
+	bool m_Visibilty;
 };

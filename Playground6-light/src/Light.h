@@ -4,30 +4,12 @@
 class Light : public Transform
 {
 public:
-	Light() : 
-		m_Ambient(glm::vec3(0.f)),
-		m_Diffuse(glm::vec3(0.f)),
-		m_Specular(glm::vec3(0.f)) 
-	{
-		this->SetOrigin(glm::vec3(0.05f));
-		m_Index = m_NextIndex++;
-		m_Cuboid.SetScale(glm::vec3(0.1f));
-		m_Cuboid.SetColor(glm::vec4(0.f, 0.f, 0.f, 1.f));
-	}
-
+	Light();
 	virtual ~Light() { }
 
 	void SetAmbient(glm::vec3 ambient)  { m_Ambient = ambient; }
 	void SetDiffuse(glm::vec3 diffuse)  { m_Diffuse = diffuse; }
 	void SetSpecular(glm::vec3 specular)  { m_Specular = specular; }
-
-	void SetLightByColor(glm::vec3 color, glm::vec3 ambient = glm::vec3(0.5f))
-	{
-		m_Diffuse = color;
-		m_Ambient = ambient;
-		m_Specular = glm::vec3((color.r + color.g + color.b) / 3.f);
-		m_Cuboid.SetColor(glm::vec4(m_Diffuse, 1.f));
-	}
 
 	glm::vec3 GetAmbient() const { return m_Ambient; }
 	glm::vec3 GetDiffuse() const { return m_Diffuse; }
@@ -36,6 +18,11 @@ public:
 	glm::vec3 GetPosition() const { return this->GetTranslation(); }
 
 	Cuboid& GetRepresentation() { return m_Cuboid; }
+
+	// This matrix is required to be updated when drawing light source.
+	// It is since we've got matrix of representation and of light, so we have to
+	// combine these two in order to get matrix representing a model.
+	glm::mat4 GetModelMatrix() const;
 
 	virtual void UpdateShader(Shader& shader) 
 	{ 
@@ -51,9 +38,6 @@ public:
 	virtual unsigned int GetIndex() { return m_Index; }
 
 private:
-	float m_ImGuiColor[3];
-	float m_ImGuiAmbientDiff[2];
-
 	glm::vec3 m_Ambient;
 	glm::vec3 m_Diffuse;
 	glm::vec3 m_Specular;
