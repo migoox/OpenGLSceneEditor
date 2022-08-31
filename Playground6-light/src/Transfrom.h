@@ -44,13 +44,16 @@ public:
 	inline glm::vec3 GetScale()				const		  { return m_Scale; }
 
 	// Returns rotation angles in radians
-		   glm::vec3 GetAngles()			const;
+		   glm::vec3 GetEulers()			const;
 
 	// Returns rotation angles in degrees
-		   glm::vec3 GetAnglesDegrees()		const;
+		   glm::vec3 GetEulersDegrees()		const;
 
-	// Returns quaternion which defines rotation of model
+	// Returns quaternion which represents rotation of model
 	inline glm::quat GetQuaternion()		const		  { return m_Rotation; }
+
+	// Sets quaternion which represents rotation of model
+	inline void SetQuaternion(glm::quat quaternion)		  { m_Rotation = quaternion; }
 
 	// Returns global position of the model
 	inline glm::vec3 GetTranslation()		const		  { return m_Translation; }
@@ -63,7 +66,7 @@ public:
 
 	// Sets quaternion defining global rotation, each component of vec3 represents angle of rotation 
 	// around axis x, y, z (no eulers rotation axises, quaternions are used)
-		   void SetRotation(glm::vec3 angles);
+		   void SetEulers(glm::vec3 angles);
 
 	// Sets global translation
 		   void SetTranslation(glm::vec3 translation)	  { m_Translation = translation; }
@@ -81,11 +84,15 @@ public:
 	// Moves model by given vector (local or global)
 		   void Translate(glm::vec3 translation, Space relativeTo = Space::Global);
 private:
+	// Creates new quaternion, supposing ZYX convention
+	glm::quat ToQuaternion(glm::vec3 eulers);
+
+private:
 	glm::vec3 m_Right;
 	glm::vec3 m_Up;
 	glm::vec3 m_Forward;
 
-	glm::vec3 m_Angles;
+	glm::vec3 m_Eulers;
 
 	glm::vec3 m_Origin;
 	glm::vec3 m_Scale;

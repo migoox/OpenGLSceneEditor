@@ -313,6 +313,7 @@
     <None Include="src\Vendor\glm\gtx\wrap.inl" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\ItemSelection.cpp" />
     <ClCompile Include="src\NodeTreePanel.cpp" />
     <ClCompile Include="src\Light.cpp" />
     <ClCompile Include="src\Model.cpp" />
@@ -344,6 +345,7 @@
     <ClCompile Include="src\OpenGL\VertexBuffer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\ItemSelection.h" />
     <ClInclude Include="src\NodeTreePanel.h" />
     <ClInclude Include="src\Model.h" />
     <ClInclude Include="src\Input\Input.h" />

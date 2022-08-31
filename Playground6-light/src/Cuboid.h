@@ -8,10 +8,8 @@
 class Cuboid : public Transform
 {
 public:
-	Cuboid() { }
+	Cuboid();
 	~Cuboid();
-
-	void Create(float width, float length, float height);
 
 	const Mesh& GetMesh() const { return m_Mesh; }
 	
@@ -26,11 +24,8 @@ private:
 class Cube : public Cuboid
 {
 public:
-	Cube() { }
+	Cube() : Cuboid() { }
 	~Cube() { }
-
-	void Create(float width, float length, float height) = delete;
-	void Create(float x);
 
 	void SetSimpleMaterial(SimpleMaterial material) { m_SimpleMaterial = material; }
 	SimpleMaterial GetSimpleMaterial() const { return m_SimpleMaterial; }

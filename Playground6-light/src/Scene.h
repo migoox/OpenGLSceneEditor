@@ -7,6 +7,8 @@
 #include "FPCamera.h"
 #include "Cuboid.h"
 #include "Application.h"
+#include "ItemSelection.h"
+
 // application layer type child
 class Scene : public Layer
 {
@@ -26,7 +28,7 @@ private:
 	std::vector<Node> m_Nodes;
 	UIPropetiesPanel m_PropetiesPanel;
 	UINodeTreePanel m_NodeTreePanel;
-	Cube m_Selection;
+	ItemSelection m_ItemSelection;
 
 	FPCamera m_Camera;
 	bool m_EPressed;
@@ -34,5 +36,5 @@ private:
 
 	bool m_LightsBoxes;
 	bool m_SelectionVisibility;
-	float m_FPS;
+	int m_FPS;
 };

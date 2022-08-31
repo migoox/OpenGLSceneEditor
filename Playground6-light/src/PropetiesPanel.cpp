@@ -35,7 +35,7 @@ void UIPropetiesPanelTransformSection::Display(Node& node)
 {
 	auto& trans = node.GetObjectTransform();
 	auto pos = trans.GetTranslation();
-	auto rot = trans.GetAnglesDegrees();
+	auto rot = trans.GetEulersDegrees();
 	auto scal = trans.GetScale();
 
 	m_Position[0] = pos.x;	m_Position[1] = pos.y;	m_Position[2] = pos.z;
@@ -51,34 +51,34 @@ void UIPropetiesPanelTransformSection::Display(Node& node)
 	ImGui::Text("Position");
 
 		ImGui::PushStyleColor(ImGuiCol_FrameBg, IM_COL32(255, 0, 0, 100));
-		ImGui::InputFloat("x", m_Position);
+		ImGui::InputFloat("X", m_Position);
 		ImGui::PopStyleColor();
 
 
 		ImGui::PushStyleColor(ImGuiCol_FrameBg, IM_COL32(0, 255, 0, 100));
-		ImGui::InputFloat("y", &m_Position[1]);
+		ImGui::InputFloat("Y", &m_Position[1]);
 		ImGui::PopStyleColor();
 
 
 		ImGui::PushStyleColor(ImGuiCol_FrameBg, IM_COL32(0, 0, 255, 100));
-		ImGui::InputFloat("z", &m_Position[2]);
+		ImGui::InputFloat("Z", &m_Position[2]);
 		ImGui::PopStyleColor();
 
 	ImGui::Separator();
-	ImGui::Text("Eulers (XYZ)");
+	ImGui::Text("Eulers (ZYX)");
 
 		ImGui::PushStyleColor(ImGuiCol_FrameBg, IM_COL32(255, 0, 0, 100));
-		ImGui::InputFloat("pitch", m_Eulers);
+		ImGui::InputFloat("pitch (X)", m_Eulers);
 		ImGui::PopStyleColor();
 
 
 		ImGui::PushStyleColor(ImGuiCol_FrameBg, IM_COL32(0, 255, 0, 100));
-		ImGui::InputFloat("yaw", &m_Eulers[1]);
+		ImGui::InputFloat("yaw   (Y)", &m_Eulers[1]);
 		ImGui::PopStyleColor();
 
 
 		ImGui::PushStyleColor(ImGuiCol_FrameBg, IM_COL32(0, 0, 255, 100));
-		ImGui::InputFloat("roll", &m_Eulers[2]);
+		ImGui::InputFloat("roll  (Z)", &m_Eulers[2]);
 		ImGui::PopStyleColor();
 
 	ImGui::Separator();
@@ -101,7 +101,7 @@ void UIPropetiesPanelTransformSection::Display(Node& node)
 	ImGui::Separator();
 
 	trans.SetTranslation(glm::vec3(m_Position[0], m_Position[1], m_Position[2]));
-	trans.SetRotation(glm::vec3(glm::radians(m_Eulers[0]), glm::radians(m_Eulers[1]), glm::radians(m_Eulers[2])));
+	trans.SetEulers(glm::vec3(glm::radians(m_Eulers[0]), glm::radians(m_Eulers[1]), glm::radians(m_Eulers[2])));
 	trans.SetScale(glm::vec3(m_Scale[0], m_Scale[1], m_Scale[2]));
 }
 
@@ -141,7 +141,6 @@ void UIPropetiesPanelLightSection::Display(Node& node)
 		light->SetAmbient(glm::vec3(m_Ambient[0], m_Ambient[1], m_Ambient[2]));
 		light->SetSpecular(glm::vec3(m_Specular));
 		light->GetRepresentation().SetColor(glm::vec4(m_Diffuse[0], m_Diffuse[1], m_Diffuse[2], 1.f));
-
 	}
 
 	if (node.GetObjectType() == m_LightHash)

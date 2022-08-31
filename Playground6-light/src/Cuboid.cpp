@@ -1,6 +1,6 @@
 #include "Cuboid.h"
 
-void Cuboid::Create(float width, float length, float height)
+Cuboid::Cuboid()
 {
 	//    3--------2
 	//   /|       /|
@@ -14,7 +14,7 @@ void Cuboid::Create(float width, float length, float height)
 	//   length									bottom
 	//
 	// Model space is right-handed which means that:
-
+	float length = 1.f, width = 1.f, height = 1.f;
 
 	std::vector<Vertex> vertices =
 	{
@@ -89,9 +89,4 @@ void Cuboid::Create(float width, float length, float height)
 
 Cuboid::~Cuboid()
 {
-}
-
-void Cube::Create(float x)
-{
-	Cuboid::Create(x, x, x);
 }

@@ -22,10 +22,6 @@ void Scene::OnAttach()
 	m_LightsBoxes = false;
 	m_SelectionVisibility = false;
 
-	m_Selection.Create(0.4f);
-	m_Selection.SetOrigin(glm::vec3(0.2f, 0.2f, 0.2f));
-	m_Selection.SetColor(glm::vec4(0.f, 1.f, 1.f, 0.15f));
-
 	Renderer::SetClearColor(glm::vec4(0.05f, 0.05f, 0.05f, 1.f));
 	Input::SetCursorMode(CursorMode::Locked);
 	float width = (float)Application::GetSpecification().WindowSize.x;
@@ -43,8 +39,7 @@ void Scene::OnDetach()
 void Scene::OnUpdate(float dTime)
 {
 	UpdateCamera(dTime);
-	if (m_SelectedIndex >= 0)
-		UpdateTransform(Application::GetWindowHandle(), &m_Nodes[m_SelectedIndex].GetObjectTransform(), dTime);
+
 	// update lights
 	for (auto& node : m_Nodes)
 	{
@@ -82,21 +77,15 @@ void Scene::OnUpdate(float dTime)
 		}
 	}
 
-	if (m_SelectedIndex >= 0)
+	if (m_SelectedIndex >= 0 && m_SelectionVisibility)
 	{
-		auto trans = m_Nodes[m_SelectedIndex].GetObjectTransform();
-		m_Selection.SetTranslation(trans.GetTranslation());
-		m_Selection.SetRotation(trans.GetAngles());
-		LightSourceShader->Bind();
-		LightSourceShader->SetUniformMat4f("u_ModelMatrix", m_Selection.GetModelMatrix());
-		LightSourceShader->SetUniformMat3f("u_NormalMatrix", m_Selection.GetNormalMatrix());
-		LightSourceShader->SetUniform4f("u_LightColor", m_Selection.GetColor());
-		LightSourceShader->Unbind();
-		
-		if(m_SelectionVisibility)
-			Renderer::Draw(m_Selection.GetMesh(), *LightSourceShader);
+		m_ItemSelection.OnUpdate(m_Nodes[m_SelectedIndex], *LightSourceShader);
 	}
-	m_FPS = 1.f / dTime;
+
+	m_FPS = (int)(1.f / dTime);
+
+	if (m_SelectedIndex >= 0)
+		UpdateTransform(Application::GetWindowHandle(), &m_Nodes[m_SelectedIndex].GetObjectTransform(), dTime);
 }
 
 void Scene::OnImGuiRender()
@@ -137,7 +126,7 @@ void Scene::InitCubes(unsigned int count)
 		node.Create<Cube>();
 		node.SetName("Cube " + std::to_string(i));
 		auto cube = static_cast<Cube*>(node.GetObject().get());
-		cube->Create(0.3f);
+		cube->SetScale(glm::vec3(0.3f));
 		cube->SetMaterial(mat1);
 		cube->SetOrigin(glm::vec3(0.15f, 0.15f, 0.15f));
 		glm::vec3 dir = glm::normalize(glm::vec3(random(), random(), random()));
@@ -147,7 +136,7 @@ void Scene::InitCubes(unsigned int count)
 		/*cube->SetRotation(glm::vec3(random() * glm::pi<float>(),
 				random() * glm::pi<float>(),
 				random() * glm::pi<float>()));*/
-		cube->SetRotation(glm::vec3(0.f, 0.f, 0.f));
+		cube->SetEulers(glm::vec3(0.f, 0.f, 0.f));
 
 		cube->Translate(glm::vec3(0.f, 0.f, 2.f));
 
@@ -164,7 +153,7 @@ void Scene::InitLights()
 
 	auto dlight = static_cast<Cube*>(node1.GetObject().get());
 	dlight->SetTranslation(glm::vec3(0.f, 3.f, 3.f));
-	dlight->SetRotation(glm::vec3(-0.5f, 0.f, 0.f));
+	dlight->SetEulers(glm::vec3(-0.5f, 0.f, 0.f));
 	dlight->Rotate(glm::vec3(0.f, 3.f, 0.f), Space::Global);
 
 	Node node2;
@@ -182,7 +171,7 @@ void Scene::InitLights()
 
 	auto slight = static_cast<Spotlight*>(node1.GetObject().get());
 	slight->SetTranslation(glm::vec3(0.f, 0.f, 5.f));
-	slight->SetRotation(glm::vec3(0.f, glm::radians(180.f), 0.f));
+	slight->SetEulers(glm::vec3(0.f, glm::radians(180.f), 0.f));
 }
 
 void Scene::UpdateCamera(float dTime)
@@ -233,32 +222,39 @@ void Scene::UpdateTransform(GLFWwindow* window, Transform* transform, float dt)
 	const int moveSpeed = 2.5f;
 	int state;
 	float roll = 0.f, pitch = 0.f, yaw = 0.f;
-
+	bool hasToRotate = false;
 	state = glfwGetKey(window, GLFW_KEY_Z);
 	if (state == GLFW_PRESS)
 	{
+		hasToRotate = true;
 		pitch = rotSpeed * dt;
 	}
 
 	state = glfwGetKey(window, GLFW_KEY_X);
 	if (state == GLFW_PRESS)
 	{
+		hasToRotate = true;
 		yaw = rotSpeed * dt;
 	}
 
 	state = glfwGetKey(window, GLFW_KEY_C);
 	if (state == GLFW_PRESS)
 	{
+		hasToRotate = true;
 		roll = rotSpeed * dt;
 	}
 	state = glfwGetKey(window, GLFW_KEY_LEFT_CONTROL);
-	if (state == GLFW_PRESS)
+
+	if (hasToRotate)
 	{
-		transform->Rotate(glm::vec3(pitch, yaw, roll), Space::Global);
-	}
-	else
-	{
-		transform->Rotate(glm::vec3(pitch, yaw, roll), Space::Local);
+		if (state == GLFW_PRESS)
+		{
+			transform->Rotate(glm::vec3(pitch, yaw, roll), Space::Global);
+		}
+		else
+		{
+			transform->Rotate(glm::vec3(pitch, yaw, roll), Space::Local);
+		}
 	}
 
 	state = glfwGetKey(window, GLFW_KEY_I);

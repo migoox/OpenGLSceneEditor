@@ -11,7 +11,7 @@ public:
 	{
 		this->SetOrigin(glm::vec3(0.05f));
 		m_Index = m_NextIndex++;
-		m_Cuboid.Create(0.1f, 0.1f, 0.1f);
+		m_Cuboid.SetScale(glm::vec3(0.1f));
 		m_Cuboid.SetColor(glm::vec4(0.f, 0.f, 0.f, 1.f));
 	}
 
