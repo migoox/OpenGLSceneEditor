@@ -96,7 +96,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>GLEW_STATIC;</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>src\Input;src;src\Vendor;src\OpenGL;$(SolutionDir)\Dependencies\GLFW\include;$(SolutionDir)\Dependencies\GLEW\include;$(SolutionDir)\Dependencies\assimp\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src\Input;src;src\Vendor;src\Editor;src\Scene;src\Application;src\Renderer;$(SolutionDir)\Dependencies\GLFW\include;$(SolutionDir)\Dependencies\GLEW\include;$(SolutionDir)\Dependencies\assimp\include</AdditionalIncludeDirectories>
       <UndefinePreprocessorDefinitions>
       </UndefinePreprocessorDefinitions>
     </ClCompile>
@@ -115,7 +115,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>GLEW_STATIC;</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>src\Input;src;src\Vendor;src\OpenGL;$(SolutionDir)\Dependencies\GLFW\include;$(SolutionDir)\Dependencies\GLEW\include;$(SolutionDir)\Dependencies\assimp\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src\Input;src;src\Vendor;src\Editor;src\Scene;src\Application;src\Renderer;$(SolutionDir)\Dependencies\GLFW\include;$(SolutionDir)\Dependencies\GLEW\include;$(SolutionDir)\Dependencies\assimp\include</AdditionalIncludeDirectories>
       <UndefinePreprocessorDefinitions>
       </UndefinePreprocessorDefinitions>
     </ClCompile>
@@ -136,7 +136,7 @@
       <ConformanceMode>true</ConformanceMode>
       <UndefinePreprocessorDefinitions>
       </UndefinePreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src\Input;src;src\Vendor;src\OpenGL;$(SolutionDir)\Dependencies\GLFW\include;$(SolutionDir)\Dependencies\GLEW\include;$(SolutionDir)\Dependencies\assimp\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src\Input;src;src\Vendor;src\Editor;src\Scene;src\Application;src\Renderer;$(SolutionDir)\Dependencies\GLFW\include;$(SolutionDir)\Dependencies\GLEW\include;$(SolutionDir)\Dependencies\assimp\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -155,7 +155,7 @@
       <ConformanceMode>true</ConformanceMode>
       <UndefinePreprocessorDefinitions>
       </UndefinePreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src\Input;src;src\Vendor;src\OpenGL;$(SolutionDir)\Dependencies\GLFW\include;$(SolutionDir)\Dependencies\GLEW\include;$(SolutionDir)\Dependencies\assimp\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src\Input;src;src\Vendor;src\Editor;src\Scene;src\Application;src\Renderer;$(SolutionDir)\Dependencies\GLFW\include;$(SolutionDir)\Dependencies\GLEW\include;$(SolutionDir)\Dependencies\assimp\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -313,24 +313,24 @@
     <None Include="src\Vendor\glm\gtx\wrap.inl" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\ItemSelection.cpp" />
-    <ClCompile Include="src\NodeTreePanel.cpp" />
-    <ClCompile Include="src\Light.cpp" />
-    <ClCompile Include="src\Model.cpp" />
+    <ClCompile Include="src\Editor\ItemSelection.cpp" />
+    <ClCompile Include="src\Editor\NodeTreePanel.cpp" />
+    <ClCompile Include="src\Renderer\Light.cpp" />
+    <ClCompile Include="src\Renderer\Model.cpp" />
     <ClCompile Include="src\Input\Input.cpp" />
-    <ClCompile Include="src\FPCamera.cpp" />
-    <ClCompile Include="src\Application.cpp" />
-    <ClCompile Include="src\Camera.cpp" />
+    <ClCompile Include="src\Renderer\FPCamera.cpp" />
+    <ClCompile Include="src\Application\Application.cpp" />
+    <ClCompile Include="src\Renderer\Camera.cpp" />
     <ClCompile Include="src\Main.cpp" />
-    <ClCompile Include="src\OpenGL\IndexBuffer.cpp" />
-    <ClCompile Include="src\PropetiesPanel.cpp" />
-    <ClCompile Include="src\Renderer.cpp" />
-    <ClCompile Include="src\OpenGL\Shader.cpp" />
-    <ClCompile Include="src\OpenGL\Texture.cpp" />
-    <ClCompile Include="src\Cuboid.cpp" />
-    <ClCompile Include="src\Mesh.cpp" />
-    <ClCompile Include="src\Scene.cpp" />
-    <ClCompile Include="src\Transform.cpp" />
+    <ClCompile Include="src\Renderer\IndexBuffer.cpp" />
+    <ClCompile Include="src\Editor\PropetiesPanel.cpp" />
+    <ClCompile Include="src\Renderer\Renderer.cpp" />
+    <ClCompile Include="src\Renderer\Shader.cpp" />
+    <ClCompile Include="src\Renderer\Texture.cpp" />
+    <ClCompile Include="src\Renderer\Cuboid.cpp" />
+    <ClCompile Include="src\Renderer\Mesh.cpp" />
+    <ClCompile Include="src\Scene\Scene.cpp" />
+    <ClCompile Include="src\Scene\Transform.cpp" />
     <ClCompile Include="src\Vendor\glm\detail\glm.cpp" />
     <ClCompile Include="src\Vendor\imgui\imgui.cpp" />
     <ClCompile Include="src\Vendor\imgui\imgui_demo.cpp" />
@@ -341,33 +341,32 @@
     <ClCompile Include="src\Vendor\imgui\imgui_widgets.cpp" />
     <ClCompile Include="src\Vendor\imgui\imgui_stdlib.cpp" />
     <ClCompile Include="src\Vendor\stb_image\stb_image.cpp" />
-    <ClCompile Include="src\OpenGL\VertexArray.cpp" />
-    <ClCompile Include="src\OpenGL\VertexBuffer.cpp" />
+    <ClCompile Include="src\Renderer\VertexArray.cpp" />
+    <ClCompile Include="src\Renderer\VertexBuffer.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\ItemSelection.h" />
-    <ClInclude Include="src\NodeTreePanel.h" />
-    <ClInclude Include="src\Model.h" />
+    <ClInclude Include="src\Editor\ItemSelection.h" />
+    <ClInclude Include="src\Editor\NodeTreePanel.h" />
+    <ClInclude Include="src\Renderer\Model.h" />
     <ClInclude Include="src\Input\Input.h" />
-    <ClInclude Include="src\FPCamera.h" />
-    <ClInclude Include="src\Application.h" />
-    <ClInclude Include="src\Camera.h" />
+    <ClInclude Include="src\Renderer\FPCamera.h" />
+    <ClInclude Include="src\Application\Application.h" />
+    <ClInclude Include="src\Renderer\Camera.h" />
     <ClInclude Include="src\Input\KeyCodes.h" />
-    <ClInclude Include="src\Layer.h" />
-    <ClInclude Include="src\MyLayers.h" />
-    <ClInclude Include="src\Node.h" />
-    <ClInclude Include="src\OpenGL\Debug.h" />
-    <ClInclude Include="src\OpenGL\IndexBuffer.h" />
-    <ClInclude Include="src\PropetiesPanel.h" />
-    <ClInclude Include="src\Renderer.h" />
-    <ClInclude Include="src\OpenGL\Shader.h" />
-    <ClInclude Include="src\OpenGL\Texture.h" />
-    <ClInclude Include="src\Cuboid.h" />
-    <ClInclude Include="src\Light.h" />
-    <ClInclude Include="src\Material.h" />
-    <ClInclude Include="src\Mesh.h" />
-    <ClInclude Include="src\Scene.h" />
-    <ClInclude Include="src\Transfrom.h" />
+    <ClInclude Include="src\Application\Layer.h" />
+    <ClInclude Include="src\Scene\Node.h" />
+    <ClInclude Include="src\Renderer\Debug.h" />
+    <ClInclude Include="src\Renderer\IndexBuffer.h" />
+    <ClInclude Include="src\Editor\PropetiesPanel.h" />
+    <ClInclude Include="src\Renderer\Renderer.h" />
+    <ClInclude Include="src\Renderer\Shader.h" />
+    <ClInclude Include="src\Renderer\Texture.h" />
+    <ClInclude Include="src\Renderer\Cuboid.h" />
+    <ClInclude Include="src\Renderer\Light.h" />
+    <ClInclude Include="src\Renderer\Material.h" />
+    <ClInclude Include="src\Renderer\Mesh.h" />
+    <ClInclude Include="src\Scene\Scene.h" />
+    <ClInclude Include="src\Scene\Transfrom.h" />
     <ClInclude Include="src\Vendor\glm\common.hpp" />
     <ClInclude Include="src\Vendor\glm\detail\compute_common.hpp" />
     <ClInclude Include="src\Vendor\glm\detail\compute_vector_relational.hpp" />
@@ -665,9 +664,9 @@
     <ClInclude Include="src\Vendor\imgui\imstb_truetype.h" />
     <ClInclude Include="src\Vendor\imgui\imgui_stdlib.h" />
     <ClInclude Include="src\Vendor\stb_image\stb_image.h" />
-    <ClInclude Include="src\OpenGL\VertexArray.h" />
-    <ClInclude Include="src\OpenGL\VertexBuffer.h" />
-    <ClInclude Include="src\OpenGL\VertexBufferLayout.h" />
+    <ClInclude Include="src\Renderer\VertexArray.h" />
+    <ClInclude Include="src\Renderer\VertexBuffer.h" />
+    <ClInclude Include="src\Renderer\VertexBufferLayout.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\3Dobjects\backpack\ao.jpg" />
