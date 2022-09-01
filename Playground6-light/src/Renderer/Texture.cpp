@@ -2,13 +2,14 @@
 
 #include "../vendor/stb_image/stb_image.h"
 
-Texture::Texture(const std::string& path) : 
-    m_RendererID(0U), 
-    m_FilePath(path), 
-    m_LocalBuffer(nullptr), 
-    m_Width(0), 
-    m_Height(0), 
-    m_BPP(0)
+Texture::Texture(const std::string& path) :
+    m_RendererID(0U),
+    m_FilePath(path),
+    m_LocalBuffer(nullptr),
+    m_Width(0),
+    m_Height(0),
+    m_BPP(0),
+    m_LoadingSuccess(false)
 {
     // 1 means true, we want to flip image, since opengl expects (0, 0) coordinate to be in the left bottom, where images
     // have it usualy set in the left top
@@ -34,6 +35,8 @@ Texture::Texture(const std::string& path) :
         GLCall( glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, m_Width, m_Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, m_LocalBuffer) );
 
         GLCall( glGenerateMipmap(GL_TEXTURE_2D) );
+
+        m_LoadingSuccess = true;
     }
 
 

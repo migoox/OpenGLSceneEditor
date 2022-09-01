@@ -1,6 +1,6 @@
-#include "Cuboid.h"
+#include "Cube.h"
 
-Cuboid::Cuboid()
+Cube::Cube()
 {
 	//    3--------2
 	//   /|       /|
@@ -87,6 +87,6 @@ Cuboid::Cuboid()
 	m_Color = glm::vec4(1.0f);
 }
 
-Cuboid::~Cuboid()
+Cube::~Cube()
 {
 }

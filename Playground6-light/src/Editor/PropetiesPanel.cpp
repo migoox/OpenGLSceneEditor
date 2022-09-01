@@ -1,17 +1,21 @@
+#include <glm/gtc/type_ptr.hpp>
 #include "PropetiesPanel.h"
 #include "Light.h"
 #include "Model.h"
+#include "ResourceManager.h"
 
 void UIPropetiesPanel::Init()
 {
 	m_LightSection.Init();
 	m_ModelSection.Init();
+	m_CubeSection.Init();
 }
 
 void UIPropetiesPanel::DisplayBlank()
 {
 	ImGui::Begin("Propeties panel");
 	ImGui::Text("Nothing has been selected.");
+	m_Focused = ImGui::IsWindowFocused();
 	ImGui::End();
 }
 
@@ -32,7 +36,10 @@ void UIPropetiesPanel::Display(Node& node)
 	}
 	m_TransformSection.Display(node);
 	m_LightSection.Display(node);
+	m_CubeSection.Display(node);
 	m_ModelSection.Display(node);
+
+	m_Focused = ImGui::IsWindowFocused();
 	ImGui::End();
 }
 
@@ -222,4 +229,219 @@ void UIPropetiesPanelModelSection::Display(Node& node)
 		ImGui::Separator(); 
 		ImGui::Separator();
 	}
+}
+
+void UIPropetiesPanelCubeSection::Init()
+{
+	m_CubeHash = typeid(Cube).hash_code();
+}
+
+void UIPropetiesPanelCubeSection::Display(Node& node)
+{
+	if (node.GetObjectType() != m_CubeHash)
+		return;
+
+	auto cube = static_cast<Cube*>(node.GetObject().get());
+
+	ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(180, 0, 230, 255));
+	ImGui::Text("Cube");
+	ImGui::PopStyleColor();
+
+	ImGui::Separator();
+
+	ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 102, 255, 255));
+	ImGui::Text("Material");
+	ImGui::PopStyleColor();
+
+	Material mat = cube->GetMaterial();
+	ImGui::ColorEdit3("Ambient",	glm::value_ptr(mat.Ambient));
+	ImGui::ColorEdit3("Diffues",	glm::value_ptr(mat.Diffuse));
+	ImGui::ColorEdit3("Specular",	glm::value_ptr(mat.Specular));
+	
+	std::string label;
+
+	// texture
+	ImGui::Text("Texture path: ");
+
+	static unsigned int selectedIndex = 0;
+	{
+		ImGui::BeginChild("tree##texture", ImVec2(0, 64), true);
+		for (int i = 0; i < mat.Texture.size(); i++)
+		{
+			label = "[" + std::to_string(i) + "] " + mat.Texture[i]->GetFilePath();
+			if (ImGui::Selectable(label.c_str(), selectedIndex == i))
+				selectedIndex = i;
+		}
+		ImGui::EndChild();
+	}
+
+	if (ImGui::Button("Remove##texture"))
+	{
+		if (!mat.Texture.empty())
+			mat.Texture.erase(mat.Texture.begin() + selectedIndex);
+	}
+	ImGui::SameLine();
+	if (ImGui::Button("v##texture"))
+	{
+		if (!mat.Texture.empty())
+		{
+			if(selectedIndex < mat.Texture.size() - 1)
+				std::swap(mat.Texture[selectedIndex + 1], mat.Texture[selectedIndex]);
+		}
+	}
+	ImGui::SameLine();
+	if (ImGui::Button("^##texture"))
+	{
+		if (!mat.Texture.empty())
+		{
+			if (selectedIndex > 0)
+				std::swap(mat.Texture[selectedIndex - 1], mat.Texture[selectedIndex]);
+		}
+	}
+	ImGui::Text("Load Texture: ");
+
+	static std::string text1 = "";
+	{
+		ImGui::InputText("##texture", &text1);
+	}
+	ImGui::SameLine();
+	static bool loaded = false;
+	static bool error = false;
+	if (ImGui::Button("Load##texture"))
+	{
+		auto texture = ResourceManager::GetTexture(text1);
+		if (texture->IsLoadingSucceded())
+		{
+			mat.Texture.push_back(texture);
+			loaded = true;
+			error = false;
+			text1 = "";
+		}
+		else
+		{
+			loaded = false;
+			error = true;
+		}
+	}
+	if(!loaded && !error)
+		ImGui::Text(" ");
+	else if (loaded)
+	{
+		ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(0, 255, 0, 255));
+		ImGui::Text("Texure has been loaded.");
+		ImGui::PopStyleColor();
+	}
+	else
+	{
+		ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 0, 0, 255));
+		ImGui::Text("Couldn't load texture.");
+		ImGui::PopStyleColor();
+
+	}
+
+	// specular map
+	ImGui::Text("Specular map path: ");
+
+	static unsigned int selectedIndex2 = 0;
+	{
+		ImGui::BeginChild("tree##specular", ImVec2(0, 64), true);
+		for (int i = 0; i < mat.SpecularMap.size(); i++)
+		{
+			label = "[" + std::to_string(i) + "] " + mat.SpecularMap[i]->GetFilePath();
+			if (ImGui::Selectable(label.c_str(), selectedIndex2 == i))
+				selectedIndex2 = i;
+		}
+		ImGui::EndChild();
+	}
+
+	if (ImGui::Button("Remove##specular"))
+	{
+		if (!mat.SpecularMap.empty())
+			mat.SpecularMap.erase(mat.SpecularMap.begin() + selectedIndex2);
+	}
+	ImGui::SameLine();
+	if (ImGui::Button("v##specular"))
+	{
+		if (!mat.SpecularMap.empty())
+		{
+			if (selectedIndex2 < mat.SpecularMap.size() - 1)
+				std::swap(mat.SpecularMap[selectedIndex2 + 1], mat.SpecularMap[selectedIndex2]);
+		}
+	}
+	ImGui::SameLine();
+	if (ImGui::Button("^##specular"))
+	{
+		if (!mat.SpecularMap.empty())
+		{
+			if (selectedIndex2 > 0)
+				std::swap(mat.SpecularMap[selectedIndex2 - 1], mat.SpecularMap[selectedIndex2]);
+		}
+	}
+	ImGui::Text("Load Specular map: ");
+
+	static std::string text2 = "";
+	{
+		ImGui::InputText("##specular", &text2);
+	}
+	ImGui::SameLine();
+	static bool loaded2 = false;
+	static bool error2 = false;
+	if (ImGui::Button("Load##specular"))
+	{
+		auto speuclarMap = ResourceManager::GetTexture(text2);
+		if (speuclarMap->IsLoadingSucceded())
+		{
+			mat.SpecularMap.push_back(speuclarMap);
+			loaded2 = true;
+			error2 = false;
+			text2 = "";
+		}
+		else
+		{
+			loaded2 = false;
+			error2 = true;
+		}
+	}
+
+	if (!loaded2 && !error2)
+		ImGui::Text(" ");
+	else if (loaded2)
+	{
+		ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(0, 255, 0, 255));
+		ImGui::Text("Specular map has been loaded.");
+		ImGui::PopStyleColor();
+	}
+	else
+	{
+		ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 0, 0, 255));
+		ImGui::Text("Couldn't load specular map.");
+		ImGui::PopStyleColor();
+
+	}
+	/*ImGui::Text("Specular map path: ");
+
+	for (auto& map : mat.SpecularMap)
+	{
+		ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 255, 0, 255));
+		if (mat.SpecularMap.size() > 0)
+			ImGui::Text(mat.SpecularMap[0]->GetFilePath().c_str());
+		else
+			ImGui::Text("no specular map has been loaded.");
+		ImGui::PopStyleColor();
+	}
+	{
+		if (ImGui::Button("Load##map"))
+		{
+
+		}
+
+		ImGui::SameLine();
+
+		if (ImGui::Button("Remove##map"))
+		{
+			if (mat.Texture.size() > 0)
+				mat.SpecularMap.pop_back();
+		}
+	}*/
+	cube->SetMaterial(mat);
 }

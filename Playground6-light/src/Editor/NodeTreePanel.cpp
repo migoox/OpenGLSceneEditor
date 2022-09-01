@@ -1,7 +1,7 @@
 #include "NodeTreePanel.h"
 #include "Light.h"
 #include "Model.h"
-#include "Cuboid.h"
+#include "Cube.h"
 #include "imgui/imgui_stdlib.h"
 
 namespace ImGui {
@@ -29,7 +29,7 @@ void UINodeTreePanel::Display(std::vector<Node>& nodes, int& selectedIndex)
     ImGui::Begin("Tree panel");
     std::string label;
 
-    ImGui::BeginChild("tree", ImVec2(0, 200), true);
+    ImGui::BeginChild("tree##nodetree", ImVec2(0, 200), true);
     for (int i = 0; i < nodes.size(); i++)
     {
         if(nodes[i].IsVisible())
@@ -117,7 +117,7 @@ void UINodeTreePanel::Display(std::vector<Node>& nodes, int& selectedIndex)
             else if (current == 4)
                 newNode.Create<Model>();
             else
-                newNode.Create<Cuboid>();
+                newNode.Create<Cube>();
 
             newNode.SetName(name);
             nodes.push_back(newNode);
@@ -130,6 +130,7 @@ void UINodeTreePanel::Display(std::vector<Node>& nodes, int& selectedIndex)
             m_AddWindowActivated = false;
         }
 
+        m_Focused = ImGui::IsWindowFocused();
         ImGui::End();
     }
 }

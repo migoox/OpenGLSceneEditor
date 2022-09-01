@@ -4,22 +4,18 @@
 #include "Renderer.h"
 #include "Input.h"
 #include "Application.h"
-
-// to do: shader manager
-std::shared_ptr<Shader> ObjectShader;
-std::shared_ptr<Shader> LightSourceShader;
-// --------------------
+#include "ResourceManager.h"
 
 void Scene::OnAttach()
 {
-	ObjectShader = std::shared_ptr<Shader>(new Shader("res/shaders/Material.shader"));
-	LightSourceShader = std::shared_ptr<Shader>(new Shader("res/shaders/LightSource.shader"));
+	ResourceManager::AddShaderAlias("ObjectShader", "res/shaders/Material.shader");
+	ResourceManager::AddShaderAlias("LightSourceShader", "res/shaders/LightSource.shader");
 	m_PropetiesPanel.Init();
 	m_NodeTreePanel.Init();
 	m_SelectedIndex = -1;
 	m_EPressed = false;
 
-	m_LightsBoxes = false;
+	m_LightBoxes = false;
 	m_SelectionVisibility = false;
 
 	Renderer::SetClearColor(glm::vec4(0.05f, 0.05f, 0.05f, 1.f));
@@ -39,27 +35,50 @@ void Scene::OnDetach()
 void Scene::OnUpdate(float dTime)
 {
 	UpdateCamera(dTime);
-
+	Renderer::ClearLights(*ResourceManager::GetShader("ObjectShader"));
 	// update lights
 	for (auto& node : m_Nodes)
 	{
 		if (!node.IsVisible()) continue;
 
-		if (node.GetObjectType() == typeid(Light).hash_code() ||
-			node.GetObjectType() == typeid(DirectionalLight).hash_code() ||
-			node.GetObjectType() == typeid(PointLight).hash_code() ||
-			node.GetObjectType() == typeid(Spotlight).hash_code())
+		// draw representation with light source shader
+		if (m_LightBoxes)
+		{
+			if (node.GetObjectType() == typeid(Light).hash_code() ||
+				node.GetObjectType() == typeid(DirectionalLight).hash_code() ||
+				node.GetObjectType() == typeid(PointLight).hash_code() ||
+				node.GetObjectType() == typeid(Spotlight).hash_code())
+			{
+				auto light = static_cast<Light*>(node.GetObject().get());
+
+				ResourceManager::GetShader("LightSourceShader")->Bind();
+				ResourceManager::GetShader("LightSourceShader")->SetUniformMat4f("u_ModelMatrix", light->GetModelMatrix());
+				ResourceManager::GetShader("LightSourceShader")->SetUniform4f("u_LightColor", light->GetRepresentation().GetColor());
+				ResourceManager::GetShader("LightSourceShader")->Unbind();
+				Renderer::Draw(light->GetRepresentation().GetMesh(), *ResourceManager::GetShader("LightSourceShader"));
+			}
+		}
+
+		// update object shader 
+		if (node.GetObjectType() == typeid(Light).hash_code())
 		{
 			auto light = static_cast<Light*>(node.GetObject().get());
-			light->UpdateShader(*ObjectShader);
-
-			LightSourceShader->Bind();
-			LightSourceShader->SetUniformMat4f("u_ModelMatrix", light->GetModelMatrix());
-			LightSourceShader->SetUniform4f("u_LightColor", light->GetRepresentation().GetColor());
-			LightSourceShader->Unbind();
-
-			if(m_LightsBoxes)
-				Renderer::Draw(light->GetRepresentation().GetMesh(), *LightSourceShader);
+			Renderer::PushLight(*light, *ResourceManager::GetShader("ObjectShader"));
+		}
+		if (node.GetObjectType() == typeid(DirectionalLight).hash_code())
+		{
+			auto light = static_cast<DirectionalLight*>(node.GetObject().get());
+			Renderer::PushLight(*light, *ResourceManager::GetShader("ObjectShader"));
+		}
+		if (node.GetObjectType() == typeid(PointLight).hash_code())
+		{
+			auto light = static_cast<PointLight*>(node.GetObject().get());
+			Renderer::PushLight(*light, *ResourceManager::GetShader("ObjectShader"));
+		}
+		if (node.GetObjectType() == typeid(Spotlight).hash_code())
+		{
+			auto light = static_cast<Spotlight*>(node.GetObject().get());
+			Renderer::PushLight(*light, *ResourceManager::GetShader("ObjectShader"));
 		}
 	}
 
@@ -73,23 +92,23 @@ void Scene::OnUpdate(float dTime)
 
 			auto cube = static_cast<Cube*>(node.GetObject().get());
 
-			ObjectShader->Bind();
-			ObjectShader->SetUniformMat4f("u_ModelMatrix", cube->GetModelMatrix());
-			ObjectShader->SetUniformMat3f("u_NormalMatrix", cube->GetNormalMatrix());
-			ObjectShader->Unbind();
+			ResourceManager::GetShader("ObjectShader")->Bind();
+			ResourceManager::GetShader("ObjectShader")->SetUniformMat4f("u_ModelMatrix", cube->GetModelMatrix());
+			ResourceManager::GetShader("ObjectShader")->SetUniformMat3f("u_NormalMatrix", cube->GetNormalMatrix());
+			ResourceManager::GetShader("ObjectShader")->Unbind();
 
-			Renderer::Draw(cube->GetMesh(), *ObjectShader, cube->GetMaterial());
+			Renderer::Draw(cube->GetMesh(), *ResourceManager::GetShader("ObjectShader"), cube->GetMaterial());
 		}
 	}
 
 	if (m_SelectedIndex >= 0 && m_SelectionVisibility)
 	{
-		m_ItemSelection.OnUpdate(m_Nodes[m_SelectedIndex], *LightSourceShader);
+		m_ItemSelection.OnUpdate(m_Nodes[m_SelectedIndex], *ResourceManager::GetShader("LightSourceShader"));
 	}
 
 	m_FPS = (int)(1.f / dTime);
 
-	if (m_SelectedIndex >= 0)
+	if (m_SelectedIndex >= 0 && !m_PropetiesPanel.IsFocused() && !m_NodeTreePanel.IsFocused())
 		UpdateTransform(Application::GetWindowHandle(), &m_Nodes[m_SelectedIndex].GetObjectTransform(), dTime);
 }
 
@@ -107,7 +126,7 @@ void Scene::OnImGuiRender()
 	ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 102, 255, 255));
 	ImGui::Text(text.c_str());
 	ImGui::PopStyleColor();
-	ImGui::Checkbox("Show light boxes ", &m_LightsBoxes);
+	ImGui::Checkbox("Show light boxes ", &m_LightBoxes);
 	ImGui::Checkbox("Selection visibility", &m_SelectionVisibility);
 	ImGui::End();
 }
@@ -117,14 +136,12 @@ void Scene::InitCubes(unsigned int count)
 	srand(time(NULL));
 	auto random = []() -> float { return (float)(rand() % 1999) / 1000.f - 1.f; };
 
-	std::shared_ptr<Texture> texture1 = std::shared_ptr<Texture>(new Texture("res/textures/dice.png"));
-	std::shared_ptr<Texture> specularMap1 = std::shared_ptr<Texture>(new Texture("res/specular_maps/marble_dice_specular.png"));
-	std::shared_ptr<Texture> texture2 = std::shared_ptr<Texture>(new Texture("res/textures/box.png"));
-	std::shared_ptr<Texture> specularMap2 = std::shared_ptr<Texture>(new Texture("res/specular_maps/box_specular.png"));
+	Material mat1 = { 32.f, glm::vec3(0.f), glm::vec3(0.f), glm::vec3(0.f),
+		{ ResourceManager::GetTexture("res/specular_maps/marble_dice_specular.png"),
+		ResourceManager::GetTexture("res/specular_maps/box_specular.png") },
 
-	Material mat1 = { {specularMap1}, {texture1}, 32.f };
-	Material mat2 = { {specularMap2}, {texture2}, 256.f };
-
+		{ ResourceManager::GetTexture("res/textures/dice.png"),
+		ResourceManager::GetTexture("res/textures/box.png")} };
 	for (unsigned int i = 0; i < count; i++)
 	{
 		Node node;
@@ -187,8 +204,11 @@ void Scene::UpdateCamera(float dTime)
 		{
 			if (m_Camera.IsFreezed())
 			{
-				m_Camera.Freeze(false);
-				Input::SetCursorMode(CursorMode::Locked);
+				if (!m_PropetiesPanel.IsFocused() && !m_NodeTreePanel.IsFocused())
+				{
+					m_Camera.Freeze(false);
+					Input::SetCursorMode(CursorMode::Locked);
+				}
 			}
 			else
 			{
@@ -207,17 +227,17 @@ void Scene::UpdateCamera(float dTime)
 	m_Camera.UpdateCamera(dTime);
 
 	// update object shader
-	ObjectShader->Bind();
-	ObjectShader->SetUniformMat4f("u_ViewMatrix", m_Camera.GetViewMatrix());
-	ObjectShader->SetUniformMat4f("u_ProjectionMatrix", m_Camera.GetProjectionMatrix());
-	ObjectShader->SetUniform3f("u_ViewerPosition", m_Camera.GetTranslation());
-	ObjectShader->Unbind();
+	ResourceManager::GetShader("ObjectShader")->Bind();
+	ResourceManager::GetShader("ObjectShader")->SetUniformMat4f("u_ViewMatrix", m_Camera.GetViewMatrix());
+	ResourceManager::GetShader("ObjectShader")->SetUniformMat4f("u_ProjectionMatrix", m_Camera.GetProjectionMatrix());
+	ResourceManager::GetShader("ObjectShader")->SetUniform3f("u_ViewerPosition", m_Camera.GetTranslation());
+	ResourceManager::GetShader("ObjectShader")->Unbind();
 
 	// update light source shader
-	LightSourceShader->Bind();
-	LightSourceShader->SetUniformMat4f("u_ViewMatrix", m_Camera.GetViewMatrix());
-	LightSourceShader->SetUniformMat4f("u_ProjectionMatrix", m_Camera.GetProjectionMatrix());
-	LightSourceShader->Unbind();
+	ResourceManager::GetShader("LightSourceShader")->Bind();
+	ResourceManager::GetShader("LightSourceShader")->SetUniformMat4f("u_ViewMatrix", m_Camera.GetViewMatrix());
+	ResourceManager::GetShader("LightSourceShader")->SetUniformMat4f("u_ProjectionMatrix", m_Camera.GetProjectionMatrix());
+	ResourceManager::GetShader("LightSourceShader")->Unbind();
 }
 
 void Scene::UpdateTransform(GLFWwindow* window, Transform* transform, float dt)

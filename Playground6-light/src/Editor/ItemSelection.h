@@ -1,6 +1,6 @@
 #pragma once
 #include "Node.h"
-#include "Cuboid.h"
+#include "Cube.h"
 #include "Renderer.h"
 class ItemSelection
 {
@@ -9,8 +9,8 @@ public:
 	void OnUpdate(Node& node, Shader& shader);
 
 private:
-	Cuboid m_XAxis;
-	Cuboid m_YAxis;
-	Cuboid m_ZAxis;
+	Cube m_XAxis;
+	Cube m_YAxis;
+	Cube m_ZAxis;
 };
 

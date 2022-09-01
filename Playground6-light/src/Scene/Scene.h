@@ -5,7 +5,7 @@
 #include "NodeTreePanel.h"
 #include "Layer.h"
 #include "FPCamera.h"
-#include "Cuboid.h"
+#include "Cube.h"
 #include "Application.h"
 #include "ItemSelection.h"
 
@@ -34,7 +34,7 @@ private:
 	bool m_EPressed;
 	int m_SelectedIndex;
 
-	bool m_LightsBoxes;
+	bool m_LightBoxes;
 	bool m_SelectionVisibility;
 	int m_FPS;
 };

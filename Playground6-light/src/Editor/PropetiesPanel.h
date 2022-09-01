@@ -1,5 +1,6 @@
 #pragma once
 #include "Node.h"
+#include "Panel.h"
 #include "imgui/imgui.h"
 #include "imgui/imgui_stdlib.h"
 
@@ -17,7 +18,13 @@ private:
 class UIPropetiesPanelCubeSection
 {
 public:
+	void Init();
 	void Display(Node& node);
+
+private:
+	size_t m_CubeHash;
+	std::string textruePath;
+	std::string mapPath;
 };
 
 class UIPropetiesPanelModelSection
@@ -55,15 +62,16 @@ private:
 	float m_OuterCutOffAngle;
 };
 
-class UIPropetiesPanel
+class UIPropetiesPanel : public Panel
 {
-	UIPropetiesPanelTransformSection m_TransformSection;
-	UIPropetiesPanelCubeSection m_CuboidSection;
-	UIPropetiesPanelModelSection m_ModelSection;
-	UIPropetiesPanelLightSection m_LightSection;
-
 public:
 	void Init();
 	void DisplayBlank();
 	void Display(Node& node);
+
+private:
+	UIPropetiesPanelTransformSection m_TransformSection;
+	UIPropetiesPanelCubeSection m_CubeSection;
+	UIPropetiesPanelModelSection m_ModelSection;
+	UIPropetiesPanelLightSection m_LightSection;
 };

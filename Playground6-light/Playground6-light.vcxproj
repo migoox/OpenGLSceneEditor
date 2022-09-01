@@ -171,7 +171,6 @@
     <None Include="res\3Dobjects\backpack\backpack.mtl" />
     <None Include="res\shaders\LightSource.shader" />
     <None Include="res\shaders\Material.shader" />
-    <None Include="res\shaders\SimpleMaterial.shader" />
     <None Include="src\Vendor\glm\detail\func_common.inl" />
     <None Include="src\Vendor\glm\detail\func_common_simd.inl" />
     <None Include="src\Vendor\glm\detail\func_exponential.inl" />
@@ -313,9 +312,9 @@
     <None Include="src\Vendor\glm\gtx\wrap.inl" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Scene\ResourceManager.cpp" />
     <ClCompile Include="src\Editor\ItemSelection.cpp" />
     <ClCompile Include="src\Editor\NodeTreePanel.cpp" />
-    <ClCompile Include="src\Renderer\Light.cpp" />
     <ClCompile Include="src\Renderer\Model.cpp" />
     <ClCompile Include="src\Input\Input.cpp" />
     <ClCompile Include="src\Renderer\FPCamera.cpp" />
@@ -327,7 +326,7 @@
     <ClCompile Include="src\Renderer\Renderer.cpp" />
     <ClCompile Include="src\Renderer\Shader.cpp" />
     <ClCompile Include="src\Renderer\Texture.cpp" />
-    <ClCompile Include="src\Renderer\Cuboid.cpp" />
+    <ClCompile Include="src\Renderer\Cube.cpp" />
     <ClCompile Include="src\Renderer\Mesh.cpp" />
     <ClCompile Include="src\Scene\Scene.cpp" />
     <ClCompile Include="src\Scene\Transform.cpp" />
@@ -345,6 +344,8 @@
     <ClCompile Include="src\Renderer\VertexBuffer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Editor\Panel.h" />
+    <ClInclude Include="src\Scene\ResourceManager.h" />
     <ClInclude Include="src\Editor\ItemSelection.h" />
     <ClInclude Include="src\Editor\NodeTreePanel.h" />
     <ClInclude Include="src\Renderer\Model.h" />
@@ -361,7 +362,7 @@
     <ClInclude Include="src\Renderer\Renderer.h" />
     <ClInclude Include="src\Renderer\Shader.h" />
     <ClInclude Include="src\Renderer\Texture.h" />
-    <ClInclude Include="src\Renderer\Cuboid.h" />
+    <ClInclude Include="src\Renderer\Cube.h" />
     <ClInclude Include="src\Renderer\Light.h" />
     <ClInclude Include="src\Renderer\Material.h" />
     <ClInclude Include="src\Renderer\Mesh.h" />

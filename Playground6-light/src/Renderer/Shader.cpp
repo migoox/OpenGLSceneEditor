@@ -7,7 +7,7 @@
 #include <sstream>
 
 Shader::Shader(const std::string& filepath)
-    : m_FilePath(filepath), m_RendererID(0)
+    : m_FilePath(filepath), m_RendererID(0), m_LoadingSuccess(false)
 {
     ShaderProgramSource source = ParseShader(filepath);
 
@@ -105,26 +105,35 @@ enum ShaderType
 
 struct ShaderProgramSource Shader::ParseShader(const std::string& filepath)
 {
-
     std::ifstream stream(filepath);
     std::string line;
     std::stringstream ss[2];
     ShaderType type = NONE;
 
-    while (getline(stream, line))
+    if (!stream.is_open())
     {
-        if (line.find("#shader") != std::string::npos)
-        {
-            if (line.find("vertex") != std::string::npos)
-                type = VERTEX;
-            else if (line.find("fragment") != std::string::npos)
-                type = FRAGMENT;
-        }
-        else
-        {
-            ss[(int)type] << line << '\n';
-        }
+        std::cout << "[Shader error]: " << "Cannot load shader: " << filepath << "\n";
+        m_LoadingSuccess = false;
     }
+    else
+    {
+        while (getline(stream, line))
+        {
+            if (line.find("#shader") != std::string::npos)
+            {
+                if (line.find("vertex") != std::string::npos)
+                    type = VERTEX;
+                else if (line.find("fragment") != std::string::npos)
+                    type = FRAGMENT;
+            }
+            else
+            {
+                ss[(int)type] << line << '\n';
+            }
+        }
+        m_LoadingSuccess = true;
+    }
+    stream.close();
 
     struct ShaderProgramSource sps = { ss[0].str(), ss[1].str() };
     return sps;
