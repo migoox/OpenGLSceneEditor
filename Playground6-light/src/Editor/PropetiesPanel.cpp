@@ -8,7 +8,7 @@ void UIPropetiesPanel::Init()
 {
 	m_LightSection.Init();
 	m_ModelSection.Init();
-	m_CubeSection.Init();
+	m_MaterialSection.Init();
 }
 
 void UIPropetiesPanel::DisplayBlank()
@@ -36,8 +36,23 @@ void UIPropetiesPanel::Display(Node& node)
 	}
 	m_TransformSection.Display(node);
 	m_LightSection.Display(node);
-	m_CubeSection.Display(node);
-	m_ModelSection.Display(node);
+
+	if (node.GetObjectType() == typeid(Cube).hash_code())
+	{
+		auto cube = static_cast<Cube*>(node.GetObject().get());
+
+		ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(180, 0, 230, 255));
+		ImGui::Text("Cube");
+		ImGui::PopStyleColor();
+
+		ImGui::Separator();
+	}
+	else if (node.GetObjectType() == typeid(Model).hash_code())
+	{
+		m_ModelSection.Display(node);
+	}
+
+	m_MaterialSection.Display(node);
 
 	m_Focused = ImGui::IsWindowFocused();
 	ImGui::End();
@@ -221,39 +236,92 @@ void UIPropetiesPanelModelSection::Init()
 
 void UIPropetiesPanelModelSection::Display(Node& node)
 {
-	if (node.GetObjectType() == m_ModelHash)
-	{
-		ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(180, 0, 230, 255));
-		ImGui::Text("Model");
-		ImGui::PopStyleColor();
-		ImGui::Separator(); 
-		ImGui::Separator();
-	}
-}
-
-void UIPropetiesPanelCubeSection::Init()
-{
-	m_CubeHash = typeid(Cube).hash_code();
-}
-
-void UIPropetiesPanelCubeSection::Display(Node& node)
-{
-	if (node.GetObjectType() != m_CubeHash)
+	if (node.GetObjectType() != m_ModelHash)
 		return;
 
-	auto cube = static_cast<Cube*>(node.GetObject().get());
+	auto model = static_cast<Model*>(node.GetObject().get());
 
 	ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(180, 0, 230, 255));
-	ImGui::Text("Cube");
+	ImGui::Text("Model");
 	ImGui::PopStyleColor();
 
 	ImGui::Separator();
 
-	ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 102, 255, 255));
-	ImGui::Text("Material");
+	// model loading
+	ImGui::Text("Model path(.obj): ");
+	ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 255, 0, 255));
+
+	if (model->LoadingSucceded())
+	{
+		ImGui::Text(model->GetFilePath().c_str());
+	}
+	else
+	{
+		ImGui::Text("Nothing has been loaded.");
+	}
 	ImGui::PopStyleColor();
 
-	Material mat = cube->GetMaterial();
+	ImGui::Text("Load Model: ");
+
+	static std::string text = "";
+	{
+		ImGui::InputText("##model", &text);
+	}
+
+	ImGui::SameLine();
+	static bool loaded = false;
+	static bool error = false;
+	if (ImGui::Button("Load##model"))
+	{
+		Model m;
+		std::replace(text.begin(), text.end(), '\\', '/');
+		m.LoadModel(text);
+		if (m.LoadingSucceded())
+		{
+			*model = m;
+			loaded = true;
+			error = false;
+			text = "";
+		}
+		else
+		{
+			loaded = false;
+			error = true;
+		}
+	}
+
+	if (!loaded && !error)
+		ImGui::Text(" ");
+	else if (loaded)
+	{
+		ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(0, 255, 0, 255));
+		ImGui::Text("Model has been loaded.");
+		ImGui::PopStyleColor();
+	}
+	else
+	{
+		ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 0, 0, 255));
+		ImGui::Text("Couldn't load model.");
+		ImGui::PopStyleColor();
+
+	}
+}
+
+void UIPropetiesPanelMaterialSection::Init()
+{
+}
+
+void UIPropetiesPanelMaterialSection::Display(Node& node)
+{
+	if (!node.HasMaterial())
+		return;
+
+	ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 102, 255, 255));
+	ImGui::Text("Component: Material");
+	ImGui::PopStyleColor();
+
+
+	Material mat = node.GetMaterial();
 	ImGui::ColorEdit3("Ambient",	glm::value_ptr(mat.Ambient));
 	ImGui::ColorEdit3("Diffues",	glm::value_ptr(mat.Diffuse));
 	ImGui::ColorEdit3("Specular",	glm::value_ptr(mat.Specular));
@@ -309,6 +377,7 @@ void UIPropetiesPanelCubeSection::Display(Node& node)
 	static bool error = false;
 	if (ImGui::Button("Load##texture"))
 	{
+		std::replace(text1.begin(), text1.end(), '\\', '/');
 		auto texture = ResourceManager::GetTexture(text1);
 		if (texture->IsLoadingSucceded())
 		{
@@ -388,6 +457,7 @@ void UIPropetiesPanelCubeSection::Display(Node& node)
 	static bool error2 = false;
 	if (ImGui::Button("Load##specular"))
 	{
+		std::replace(text2.begin(), text2.end(), '\\', '/');
 		auto speuclarMap = ResourceManager::GetTexture(text2);
 		if (speuclarMap->IsLoadingSucceded())
 		{
@@ -443,5 +513,5 @@ void UIPropetiesPanelCubeSection::Display(Node& node)
 				mat.SpecularMap.pop_back();
 		}
 	}*/
-	cube->SetMaterial(mat);
+	node.SetMaterial(mat);
 }

@@ -2,6 +2,13 @@
 
 void Model::LoadModel(const std::string& filepath)
 {
+	m_LoadingSuccess = false;
+
+	// prepare containers
+	m_Meshes.clear();
+	m_Material.Texture.clear();
+	m_Material.SpecularMap.clear();
+
 	m_FilePath = filepath;
 	Assimp::Importer importer;
 
@@ -26,6 +33,8 @@ void Model::LoadModel(const std::string& filepath)
 	// scene != NULL and scene->mRootNode != NULL and all flags are 1
 
 	ProcessNode(scene->mRootNode, scene);
+
+	m_LoadingSuccess = true;
 }
 
 void Model::ProcessNode(aiNode* node, const aiScene* scene)
@@ -110,7 +119,7 @@ void Model::LoadMaterial(aiMaterial* material, aiTextureType type)
 			}
 
 			if (!found)
-				m_Material.SpecularMap.push_back(std::shared_ptr<Texture>(new Texture(textureFilePath)));
+				m_Material.SpecularMap.push_back(ResourceManager::GetTexture(textureFilePath));
 		}
 		else
 		{
@@ -124,7 +133,7 @@ void Model::LoadMaterial(aiMaterial* material, aiTextureType type)
 			}
 
 			if (!found)
-				m_Material.Texture.push_back(std::shared_ptr<Texture>(new Texture(textureFilePath)));
+				m_Material.Texture.push_back(ResourceManager::GetTexture(textureFilePath));
 		}
 	}
 }

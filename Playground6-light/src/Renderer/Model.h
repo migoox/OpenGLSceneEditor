@@ -7,16 +7,22 @@
 #include "Mesh.h"
 #include "Material.h"
 #include "Transfrom.h"
+#include "ResourceManager.h"
 
 class Model : public Transform
 {
 public:
-	Model() { }
+	Model() : m_LoadingSuccess(false) { }
 
 	void LoadModel(const std::string& filepath);
 
 	std::vector<Mesh>& GetMeshes() { return m_Meshes; }
 	Material GetMaterial() { return m_Material; }
+	void SetMaterial(Material material) { m_Material = material; }
+
+	bool LoadingSucceded() { return m_LoadingSuccess; }
+
+	std::string GetFilePath() { return m_FilePath; }
 
 private:
 	void ProcessNode(aiNode* node, const aiScene* scene);
@@ -29,5 +35,7 @@ private:
 
 	std::vector<Mesh> m_Meshes;
 	Material m_Material;
+
+	bool m_LoadingSuccess;
 };
 

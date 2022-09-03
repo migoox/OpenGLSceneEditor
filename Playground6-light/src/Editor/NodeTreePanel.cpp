@@ -70,6 +70,7 @@ void UINodeTreePanel::Display(std::vector<Node>& nodes, int& selectedIndex)
         }
     }
 
+    m_Focused = ImGui::IsWindowFocused();
     ImGui::End();
 
     if (m_AddWindowActivated)
@@ -130,7 +131,9 @@ void UINodeTreePanel::Display(std::vector<Node>& nodes, int& selectedIndex)
             m_AddWindowActivated = false;
         }
 
-        m_Focused = ImGui::IsWindowFocused();
+        if (!m_Focused)
+            m_Focused = ImGui::IsWindowFocused();
+
         ImGui::End();
     }
 }

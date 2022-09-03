@@ -82,22 +82,28 @@ void Scene::OnUpdate(float dTime)
 		}
 	}
 
-	// update cuboids
+	// update models/cuboids
 	for (auto& node : m_Nodes)
 	{
 		if (!node.IsVisible()) continue;
 
+		ResourceManager::GetShader("ObjectShader")->Bind();
+		ResourceManager::GetShader("ObjectShader")->SetUniformMat4f("u_ModelMatrix", node.GetObjectTransform().GetModelMatrix());
+		ResourceManager::GetShader("ObjectShader")->SetUniformMat3f("u_NormalMatrix", node.GetObjectTransform().GetNormalMatrix());
+		ResourceManager::GetShader("ObjectShader")->Unbind();
+
 		if (node.GetObjectType() == typeid(Cube).hash_code())
 		{
-
 			auto cube = static_cast<Cube*>(node.GetObject().get());
 
-			ResourceManager::GetShader("ObjectShader")->Bind();
-			ResourceManager::GetShader("ObjectShader")->SetUniformMat4f("u_ModelMatrix", cube->GetModelMatrix());
-			ResourceManager::GetShader("ObjectShader")->SetUniformMat3f("u_NormalMatrix", cube->GetNormalMatrix());
-			ResourceManager::GetShader("ObjectShader")->Unbind();
-
 			Renderer::Draw(cube->GetMesh(), *ResourceManager::GetShader("ObjectShader"), cube->GetMaterial());
+		}
+		else if (node.GetObjectType() == typeid(Model).hash_code())
+		{
+			auto model = static_cast<Model*>(node.GetObject().get());
+
+			for(auto &mesh : model->GetMeshes())
+				Renderer::Draw(mesh, *ResourceManager::GetShader("ObjectShader"), model->GetMaterial());
 		}
 	}
 

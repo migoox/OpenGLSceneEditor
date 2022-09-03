@@ -15,14 +15,13 @@ private:
 	float m_Scale[3];
 };
 
-class UIPropetiesPanelCubeSection
+class UIPropetiesPanelMaterialSection
 {
 public:
 	void Init();
 	void Display(Node& node);
 
 private:
-	size_t m_CubeHash;
 	std::string textruePath;
 	std::string mapPath;
 };
@@ -71,7 +70,7 @@ public:
 
 private:
 	UIPropetiesPanelTransformSection m_TransformSection;
-	UIPropetiesPanelCubeSection m_CubeSection;
+	UIPropetiesPanelMaterialSection m_MaterialSection;
 	UIPropetiesPanelModelSection m_ModelSection;
 	UIPropetiesPanelLightSection m_LightSection;
 };
