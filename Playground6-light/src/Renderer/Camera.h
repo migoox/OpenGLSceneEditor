@@ -47,6 +47,14 @@ public:
 	// sets farest possible distance from camera (objects further than zFar will be clipped)
 	void SetZFar(float zFar);
 
+	float GetFOVVertical() { return m_FOVY; }
+
+	float GetWidthByHeightRatio() { return m_Ratio; }
+
+	float GetZNear() { return m_ZNear; }
+
+	float GetZFar() { return m_ZFar; }
+
 private:
 	glm::mat4 m_ProjectionMatrix;
 
