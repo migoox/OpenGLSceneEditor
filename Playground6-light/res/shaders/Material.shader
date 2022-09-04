@@ -89,7 +89,7 @@ in vec3 Normal;
 in vec3 FragmentPosition;
 
 uniform int u_DistanceFogActive;
-uniform vec3 u_DistanceFogColor;
+uniform vec4 u_DistanceFogColor;
 uniform float u_ZFar;
 uniform float u_ZNear;
 
@@ -161,16 +161,20 @@ void main()
 	if (u_DistanceFogActive != 0)
 	{
 		float ndc = gl_FragCoord.z * 2.0 - 1.0;
-		float linearDepth = (2.0 * u_ZNear * u_ZFar) / (u_ZFar + u_ZNear - ndc * (u_ZFar - u_ZNear));
-		linearDepth = linearDepth / u_ZFar - 0.5;
-		if (linearDepth < 0.0) linearDepth = 0.0;
+		float linearDepth = ((2.0 * u_ZNear * u_ZFar) / (u_ZFar + u_ZNear - ndc * (u_ZFar - u_ZNear))) / u_ZFar;
 
-		FragColor = vec4(color + (u_DistanceFogColor * vec3(linearDepth)), 1.0);
+		// using function -4 * (x-1)^2 + 1 to allow applying fog from the moment of 
+		// being in the middle of frustum
+		float depth = (-4.0) * (linearDepth - 1.0) * (linearDepth - 1.0) + 1.0;
+		if (depth < 0.0) depth = 0.0;
+
+		float alpha = u_DistanceFogColor.a * depth;
+		
+		// blending fog with objects
+		color = vec3(u_DistanceFogColor) * alpha + color * (1.0 - alpha);
 	}
-	else
-	{
-		FragColor = vec4(color, 1.0);
-	}
+
+	FragColor = vec4(color, 1.0);
 }
 
 vec3 CalcPhong(vec3 lightDir, vec3 lAmbient, vec3 lDiffuse, vec3 lSpecular, vec3 matAmb, vec3 matDiff, vec3 matSpec)

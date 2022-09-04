@@ -139,6 +139,8 @@ void Scene::OnImGuiRender()
 
 	ImGui::Begin("Camera");
 
+	static bool distanceFog = false;
+
 	// angle for verticalFOV
 	static float verticalFOV = 45.f;
 	{
@@ -154,28 +156,37 @@ void Scene::OnImGuiRender()
 		ImGui::InputFloat("Z far ", &zFar);
 		m_Camera.SetZFar(zFar);
 
-		ResourceManager::GetShader("ObjectShader")->Bind();
-		ResourceManager::GetShader("ObjectShader")->SetUniform1f("u_ZFar", zFar);
-		ResourceManager::GetShader("ObjectShader")->SetUniform1f("u_ZNear", m_Camera.GetZNear());
-		ResourceManager::GetShader("ObjectShader")->Unbind();
+		if (distanceFog)
+		{
+			ResourceManager::GetShader("ObjectShader")->Bind();
+			ResourceManager::GetShader("ObjectShader")->SetUniform1f("u_ZFar", zFar);
+			ResourceManager::GetShader("ObjectShader")->SetUniform1f("u_ZNear", m_Camera.GetZNear());
+			ResourceManager::GetShader("ObjectShader")->Unbind();
+		}
 	}
 
 	// distance fog
-	static bool distanceFog = false;
+	
 	{
 		ImGui::Checkbox("Distance fog ", &distanceFog);
-		ResourceManager::GetShader("ObjectShader")->Bind();
-		ResourceManager::GetShader("ObjectShader")->SetUniform1i("u_DistanceFogActive", (int)distanceFog);
-		ResourceManager::GetShader("ObjectShader")->Unbind();
+		if (distanceFog)
+		{
+			ResourceManager::GetShader("ObjectShader")->Bind();
+			ResourceManager::GetShader("ObjectShader")->SetUniform1i("u_DistanceFogActive", (int)distanceFog);
+			ResourceManager::GetShader("ObjectShader")->Unbind();
+		}
 	}
 
 	// z far of frustum
-	static float color[3] = { 0.f, 0.f, 0.f };
+	static float color[4] = { 0.f, 0.f, 0.f, 1.f };
 	{
 		ImGui::ColorEdit4("Fog color", color);
-		ResourceManager::GetShader("ObjectShader")->Bind();
-		ResourceManager::GetShader("ObjectShader")->SetUniform3f("u_DistanceFogColor", glm::vec3(color[0], color[1], color[2]));
-		ResourceManager::GetShader("ObjectShader")->Unbind();
+		if (distanceFog)
+		{
+			ResourceManager::GetShader("ObjectShader")->Bind();
+			ResourceManager::GetShader("ObjectShader")->SetUniform4f("u_DistanceFogColor", glm::vec4(color[0], color[1], color[2], color[3]));
+			ResourceManager::GetShader("ObjectShader")->Unbind();
+		}
 	}
 	ImGui::End();
 }
