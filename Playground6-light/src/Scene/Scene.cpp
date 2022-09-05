@@ -41,12 +41,14 @@ void Scene::OnUpdate(float dTime)
 	Renderer::ClearLights(*ResourceManager::GetShader("ObjectShader"));
 
 	// update lights
-	for (auto& node : m_Nodes)
+	for (unsigned int i = 0; i < m_Nodes.size(); i++)
 	{
+		auto& node = m_Nodes[i];
+
 		if (!node.IsVisible()) continue;
 
 		// draw representation with light source shader
-		if (m_LightBoxes)
+		if (m_LightBoxes && (i != m_SelectedIndex || !m_SelectionVisibility))
 		{
 			if (node.GetObjectType() == typeid(Light).hash_code() ||
 				node.GetObjectType() == typeid(DirectionalLight).hash_code() ||
@@ -88,9 +90,11 @@ void Scene::OnUpdate(float dTime)
 	}
 
 	// update models/cuboids
-	for (auto& node : m_Nodes)
+	for (unsigned int i = 0; i < m_Nodes.size(); i++)
 	{
+		auto& node = m_Nodes[i];
 		if (!node.IsVisible()) continue;
+		if (i == m_SelectedIndex && m_SelectionVisibility) continue;
 
 		ResourceManager::GetShader("ObjectShader")->Bind();
 		ResourceManager::GetShader("ObjectShader")->SetUniformMat4f("u_ModelMatrix", node.GetObjectTransform().GetModelMatrix());

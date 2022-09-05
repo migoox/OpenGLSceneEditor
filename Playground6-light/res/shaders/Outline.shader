@@ -9,6 +9,8 @@ uniform mat4 u_ViewMatrix;
 uniform mat4 u_ProjectionMatrix;
 uniform mat3 u_NormalMatrix;
 
+uniform float u_Size;
+
 void main()
 {
 	vec3 Normal;
@@ -18,7 +20,7 @@ void main()
 	Normal = u_NormalMatrix * inNormal;
 
 	// convert to world positions and normal scaling (requires model with smoothed normals)
-	FragmentPosition = vec3(u_ModelMatrix * inPosition) + (Normal * 0.001);
+	FragmentPosition = vec3(u_ModelMatrix * inPosition) + (Normal * u_Size);
 
 	gl_Position = u_ProjectionMatrix * u_ViewMatrix * vec4(FragmentPosition, 1.0);
 }
