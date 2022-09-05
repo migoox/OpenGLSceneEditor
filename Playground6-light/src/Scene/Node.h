@@ -38,6 +38,7 @@ public:
 		}
 		return false;
 	}
+
 	Material GetMaterial()
 	{
 		if (m_ObjectType == typeid(Cube).hash_code())

@@ -171,6 +171,7 @@
     <None Include="res\3Dobjects\backpack\backpack.mtl" />
     <None Include="res\shaders\LightSource.shader" />
     <None Include="res\shaders\Material.shader" />
+    <None Include="res\shaders\Outline.shader" />
     <None Include="src\Vendor\glm\detail\func_common.inl" />
     <None Include="src\Vendor\glm\detail\func_common_simd.inl" />
     <None Include="src\Vendor\glm\detail\func_exponential.inl" />

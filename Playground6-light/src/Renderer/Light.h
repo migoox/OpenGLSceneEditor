@@ -10,7 +10,7 @@ public:
 		m_Specular(glm::vec3(0.9f))
 	{
 		m_Cube.SetScale(glm::vec3(0.1f));
-		m_Cube.SetOrigin(glm::vec3(0.05f));
+		m_Cube.SetOrigin(glm::vec3(0.5f));
 		m_Cube.SetColor(glm::vec4(0.7f, 0.7f, 0.7f, 1.f));
 	}
 

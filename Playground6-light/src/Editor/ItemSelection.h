@@ -6,7 +6,7 @@ class ItemSelection
 {
 public:
 	ItemSelection();
-	void OnUpdate(Node& node, Shader& shader);
+	void OnUpdate(Node& node);
 
 private:
 	Cube m_XAxis;

@@ -10,6 +10,7 @@ void Scene::OnAttach()
 {
 	ResourceManager::AddShaderAlias("ObjectShader", "res/shaders/Material.shader");
 	ResourceManager::AddShaderAlias("LightSourceShader", "res/shaders/LightSource.shader");
+	ResourceManager::AddShaderAlias("OutlineShader", "res/shaders/Outline.shader");
 	m_PropetiesPanel.Init();
 	m_NodeTreePanel.Init();
 	m_SelectedIndex = -1;
@@ -34,6 +35,8 @@ void Scene::OnDetach()
 
 void Scene::OnUpdate(float dTime)
 {
+	glStencilMask(0x00);
+
 	UpdateCamera(dTime);
 	Renderer::ClearLights(*ResourceManager::GetShader("ObjectShader"));
 
@@ -56,6 +59,7 @@ void Scene::OnUpdate(float dTime)
 				ResourceManager::GetShader("LightSourceShader")->SetUniformMat4f("u_ModelMatrix", light->GetModelMatrix());
 				ResourceManager::GetShader("LightSourceShader")->SetUniform4f("u_LightColor", light->GetRepresentation().GetColor());
 				ResourceManager::GetShader("LightSourceShader")->Unbind();
+
 				Renderer::Draw(light->GetRepresentation().GetMesh(), *ResourceManager::GetShader("LightSourceShader"));
 			}
 		}
@@ -110,7 +114,7 @@ void Scene::OnUpdate(float dTime)
 
 	if (m_SelectedIndex >= 0 && m_SelectionVisibility)
 	{
-		m_ItemSelection.OnUpdate(m_Nodes[m_SelectedIndex], *ResourceManager::GetShader("LightSourceShader"));
+		m_ItemSelection.OnUpdate(m_Nodes[m_SelectedIndex]);
 	}
 
 	m_FPS = (int)(1.f / dTime);
@@ -210,7 +214,8 @@ void Scene::InitCubes(unsigned int count)
 		auto cube = static_cast<Cube*>(node.GetObject().get());
 		cube->SetScale(glm::vec3(0.3f));
 		cube->SetMaterial(mat1);
-		cube->SetOrigin(glm::vec3(0.15f, 0.15f, 0.15f));
+		cube->SetOrigin(glm::vec3(0.5f));
+
 		glm::vec3 dir = glm::normalize(glm::vec3(random(), random(), random()));
 		float magnitude = 0.5f + ((random() + 1.f) / 2.f) * 1.f;
 		cube->Translate(dir * magnitude);
@@ -292,6 +297,12 @@ void Scene::UpdateCamera(float dTime)
 	ResourceManager::GetShader("ObjectShader")->SetUniformMat4f("u_ProjectionMatrix", m_Camera.GetProjectionMatrix());
 	ResourceManager::GetShader("ObjectShader")->SetUniform3f("u_ViewerPosition", m_Camera.GetTranslation());
 	ResourceManager::GetShader("ObjectShader")->Unbind();
+
+	// update outline shader
+	ResourceManager::GetShader("OutlineShader")->Bind();
+	ResourceManager::GetShader("OutlineShader")->SetUniformMat4f("u_ViewMatrix", m_Camera.GetViewMatrix());
+	ResourceManager::GetShader("OutlineShader")->SetUniformMat4f("u_ProjectionMatrix", m_Camera.GetProjectionMatrix());
+	ResourceManager::GetShader("OutlineShader")->Unbind();
 
 	// update light source shader
 	ResourceManager::GetShader("LightSourceShader")->Bind();

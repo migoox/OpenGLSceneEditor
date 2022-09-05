@@ -436,6 +436,7 @@
     <None Include="imgui.ini" />
     <None Include="res\shaders\Material.shader" />
     <None Include="res\3Dobjects\backpack\backpack.mtl" />
+    <None Include="res\shaders\Outline.shader" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Main.cpp">
