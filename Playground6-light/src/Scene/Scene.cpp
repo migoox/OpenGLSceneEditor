@@ -8,23 +8,30 @@
 
 void Scene::OnAttach()
 {
+	// aliases
 	ResourceManager::AddShaderAlias("ObjectShader", "res/shaders/Material.shader");
 	ResourceManager::AddShaderAlias("LightSourceShader", "res/shaders/LightSource.shader");
 	ResourceManager::AddShaderAlias("OutlineShader", "res/shaders/Outline.shader");
+
+	// editor
 	m_PropetiesPanel.Init();
 	m_NodeTreePanel.Init();
 	m_SelectedIndex = -1;
 	m_EPressed = false;
-
 	m_LightBoxes = false;
 	m_SelectionVisibility = false;
 
+	// renderer
 	Renderer::SetClearColor(glm::vec4(0.05f, 0.05f, 0.05f, 1.f));
+
+	// input
 	Input::SetCursorMode(CursorMode::Locked);
+	// camera
 	float width = (float)Application::GetSpecification().WindowSize.x;
 	float height = (float)Application::GetSpecification().WindowSize.y;
 	m_Camera.SetWidthByHeightRatio(width / height);
 
+	// models/lights
 	InitCubes();
 	InitLights();
 }
@@ -40,6 +47,7 @@ void Scene::OnUpdate(float dTime)
 	UpdateCamera(dTime);
 	Renderer::ClearLights(*ResourceManager::GetShader("ObjectShader"));
 
+	Renderer::FaceCulling(true);
 	// update lights
 	for (unsigned int i = 0; i < m_Nodes.size(); i++)
 	{
@@ -105,12 +113,14 @@ void Scene::OnUpdate(float dTime)
 		{
 			auto cube = static_cast<Cube*>(node.GetObject().get());
 
+			Renderer::FaceCulling(true);
 			Renderer::Draw(cube->GetMesh(), *ResourceManager::GetShader("ObjectShader"), cube->GetMaterial());
 		}
 		else if (node.GetObjectType() == typeid(Model).hash_code())
 		{
 			auto model = static_cast<Model*>(node.GetObject().get());
 
+			Renderer::FaceCulling(false);
 			for(auto &mesh : model->GetMeshes())
 				Renderer::Draw(mesh, *ResourceManager::GetShader("ObjectShader"), model->GetMaterial());
 		}
@@ -174,15 +184,11 @@ void Scene::OnImGuiRender()
 	}
 
 	// distance fog
-	
 	{
 		ImGui::Checkbox("Distance fog ", &distanceFog);
-		if (distanceFog)
-		{
-			ResourceManager::GetShader("ObjectShader")->Bind();
-			ResourceManager::GetShader("ObjectShader")->SetUniform1i("u_DistanceFogActive", (int)distanceFog);
-			ResourceManager::GetShader("ObjectShader")->Unbind();
-		}
+		ResourceManager::GetShader("ObjectShader")->Bind();
+		ResourceManager::GetShader("ObjectShader")->SetUniform1i("u_DistanceFogActive", (int)distanceFog);
+		ResourceManager::GetShader("ObjectShader")->Unbind();
 	}
 
 	// z far of frustum

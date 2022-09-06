@@ -24,6 +24,10 @@ public:
     static void PushLight(PointLight& light, Shader& objectShader);
     static void PushLight(Spotlight& light, Shader& objectShader);
 
+    // warning: if model doesn't follow counter-clockwise culling manier it won't work properly, also not closed objects
+    // like 2d "bilboards" with texture will disapear when looking at them from behind
+    static void FaceCulling(bool enabled) { enabled ? glEnable(GL_CULL_FACE) : glDisable(GL_CULL_FACE); }
+
     static void Draw(const VertexArray& va, const IndexBuffer& ib, const Shader& shader);
     static void Draw(const Mesh& mesh, const Shader& shader);
     static void Draw(const Mesh& mesh, Shader& shader, const Material& material);
