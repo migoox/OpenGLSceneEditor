@@ -32,6 +32,12 @@ bld/
 [Ll]og/
 [Ll]ogs/
 
+# Add an exception for dependencies
+!Dependencies/GLEW/lib/Release/Win32/glew32.lib
+!Dependencies/GLEW/lib/Release/Win32/glew32s.lib
+!Dependencies/GLEW/lib/Release/x64/glew32.lib
+!Dependencies/GLEW/lib/Release/x64/glew32s.lib
+
 # Visual Studio 2015/2017 cache/options directory
 .vs/
 # Uncomment if you have tasks that create the project's static files in wwwroot
