@@ -23,7 +23,7 @@ Project was inspired by:
 
 <img src="https://user-images.githubusercontent.com/56317134/221730546-e0ba057b-9cb3-424d-9489-5c3509459d38.png" width="400">
 
-<img src="https://user-images.githubusercontent.com/56317134/221730582-32c86911-77fe-4238-bddf-72fbc5d8758b.pn" width="400">
+<img src="https://user-images.githubusercontent.com/56317134/221730582-32c86911-77fe-4238-bddf-72fbc5d8758b.png" width="400">
 
 <img src="https://user-images.githubusercontent.com/56317134/221730613-3bc1e4e9-99f2-400b-8a2c-a9ac2acb6557.png" width="400">
 
