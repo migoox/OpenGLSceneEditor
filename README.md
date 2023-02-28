@@ -19,17 +19,13 @@ Project was inspired by:
 - https://github.com/rajsahae/thecherno_opengl
 
 ## Gallery
-<img src="Screenshot 2023-02-27 225041.png" width="400">
-![image](https://user-images.githubusercontent.com/56317134/221730526-58b4f4f9-05c8-424a-84f8-bc66df505416.png)
+<img src="https://user-images.githubusercontent.com/56317134/221730526-58b4f4f9-05c8-424a-84f8-bc66df505416.png" width="400">
 
-<img src="Screenshot 2022-08-23 125149.png" width="400">
-![image](https://user-images.githubusercontent.com/56317134/221730546-e0ba057b-9cb3-424d-9489-5c3509459d38.png)
+<img src="https://user-images.githubusercontent.com/56317134/221730546-e0ba057b-9cb3-424d-9489-5c3509459d38.png" width="400">
 
-<img src="Screenshot 2022-08-22 184809.png" width="400">
-![image](https://user-images.githubusercontent.com/56317134/221730582-32c86911-77fe-4238-bddf-72fbc5d8758b.png)
+<img src="https://user-images.githubusercontent.com/56317134/221730582-32c86911-77fe-4238-bddf-72fbc5d8758b.pn" width="400">
 
-<img src="Screenshot 2022-08-23 124513.png" width="400">
-![image](https://user-images.githubusercontent.com/56317134/221730613-3bc1e4e9-99f2-400b-8a2c-a9ac2acb6557.png)
+<img src="https://user-images.githubusercontent.com/56317134/221730613-3bc1e4e9-99f2-400b-8a2c-a9ac2acb6557.png" width="400">
 
 ## Usage
 ### Camera and modes
