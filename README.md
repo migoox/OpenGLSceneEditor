@@ -1,4 +1,17 @@
+# Table of Contents
+  * [Introduction](#introduction)
+  * [Gallery](#gallery)
+  * [Usage](#usage)
+    + [Camera and modes](#camera-and-modes)
+    + [Tree Panel and Editor Panel](#tree-panel-and-editor-panel)
+    + [Properties Panel](#properties-panel)
+      - [Light Component](#light-component)
+      - [Cube Component](#cube-component)
+      - [Model Component](#model-component)
+    + [Camera Panel](#camera-panel)
+
 # OpenGLSceneEditor
+## Introduction
 OpenGLSceneEditor is an editor build on my basic 3D Engine written in C++ with OpenGL. It supports 
 - transformation of objects (position, rotation and scale),
 - camera,
